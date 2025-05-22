@@ -24,13 +24,11 @@ A web-based car rental system for clients to browse available cars, make reserva
    - Oracle DB with username="c##loc", password="loc"
    - Run `schema_and_data.sql` to create and populate the database
 
-2. Image Setup:
-   - Create a folder `/src/main/resources/static/images` 
-   - Add `banner.jpg` for the home page
-   - Add car images referenced in the database
-
-3. Run the Application:
+2. Run the Application:
    ```bash
+   # Change directory to car-rental-client
+   cd car-rental-client
+   
    # Compile the project
    ./mvnw clean package
    
@@ -38,7 +36,7 @@ A web-based car rental system for clients to browse available cars, make reserva
    ./mvnw spring-boot:run
    ```
 
-4. Access the application at `http://localhost:8080`
+3. Access the application at `http://localhost:8080`
 
 ## Project Structure
 
