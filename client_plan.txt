@@ -1,0 +1,173 @@
+# PLAN D'IMPLÉMENTATION V2 - SITE DE LOCATION DE VOITURES (VERSION CLIENT)
+
+## APERÇU DU PROJET
+Ce plan décrit le développement d'un site web de location de voitures destiné uniquement aux clients, leur permettant de consulter les voitures disponibles, effectuer des locations et visualiser les locations en cours.
+
+## NOTE IMPORTANTE
+**La base de données est partagée entre deux applications différentes:**
+- Ce site web (interface client)
+- Une application administrative séparée pour les employés et administrateurs
+
+En conséquence, certains champs et fonctionnalités (comme les pénalités, la gestion des voitures en panne, etc.) existent dans la base de données mais ne sont pas exposés aux clients via cette interface. Ces fonctionnalités sont gérées exclusivement via l'interface administrative.
+
+## STACK TECHNOLOGIQUE
+- Backend: Java + Spring Boot + JDBC (approche SQL directe)
+- Base de données: Oracle DB
+- Frontend: Thymeleaf + CSS + JavaScript simple
+- Outil de build: Maven (avec Maven Wrapper pour exécution sans installation globale)
+- Tests: JUnit
+
+## PHASE 1: CONFIGURATION DU PROJET & CONCEPTION DE LA BASE DE DONNÉES
+[x] 1.1 Initialiser un projet Spring Boot avec dépendances minimales
+[x] 1.2 Configurer la structure du projet (packages, dossiers)
+[x] 1.3 Configurer la connexion directe à la base de données Oracle
+    [x] 1.3.1 Utiliser les identifiants suivants : username="c##loc", password="loc" 
+    [x] 1.3.2 Configurer les propriétés dans application.properties
+    [x] 1.3.3 Tester la connexion avec ces identifiants
+[x] 1.4 Créer un fichier SQL unique (schema_and_data.sql) contenant:
+    [x] 1.4.1 Table personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
+    [x] 1.4.2 Table voiture (mat, marque, model, nbplace, disp, nbloc, prix)
+    [x] 1.4.3 Table location (id_location, id_personne, mat, dteDeb, duree, cheque, etat)
+[x] 1.5 Créer les séquences et les index
+[x] 1.6 Préparer des données d'exemple (pour insertion manuelle)
+[x] 1.7 Tester la connectivité à la base de données avec JDBC (après création manuelle des tables)
+
+## PHASE 2: ADAPTATION DE LA STRUCTURE DE DONNÉES
+[x] 2.1 Créer une nouvelle classe modèle Personne pour remplacer Client et User
+    [x] 2.1.1 Intégrer les champs de Client et User dans la classe Personne
+    [x] 2.1.2 Ajouter un champ role pour distinguer les clients des administrateurs
+[x] 2.2 Mettre à jour les DAOs pour refléter la nouvelle structure
+    [x] 2.2.1 Créer PersonneDAO pour remplacer ClientDAO
+    [x] 2.2.2 Mettre à jour VoitureDAO pour filtrer les voitures en PANNE
+    [x] 2.2.3 Adapter LocationDAO pour utiliser la référence id_personne au lieu de cin
+[x] 2.3 Mettre à jour les requêtes SQL
+    [x] 2.3.1 Modifier les requêtes pour exclure les voitures en PANNE
+    [x] 2.3.2 Mettre à jour les requêtes de filtrage des voitures (DISPONIBLE/LOUEE)
+    [x] 2.3.3 Adapter les requêtes pour utiliser la table personne
+[   ] 2.4 Tester les DAOs modifiés avec la nouvelle structure
+
+## PHASE 3: RÉVISION DE LA COUCHE SERVICE
+[x] 3.1 Adapter les services à la nouvelle structure
+[x] 3.2 Créer PersonneService pour remplacer ClientService
+    [x] 3.2.1 Implémenter l'authentification avec login/password
+    [x] 3.2.2 Mettre à jour la gestion des locations par personne
+[x] 3.3 Adapter VoitureService
+    [x] 3.3.1 Mettre à jour le filtrage par état (DISPONIBLE/LOUEE)
+    [x] 3.3.2 Exclure les voitures en PANNE de l'affichage client
+[x] 3.4 Réviser LocationService
+    [x] 3.4.1 Permettre uniquement la location des voitures DISPONIBLE
+    [x] 3.4.2 Mettre à jour le changement d'état des voitures lors des locations/restitutions
+    [x] 3.4.3 Adapter pour utiliser id_personne au lieu de cin
+[   ] 3.5 Tester les services adaptés
+
+## PHASE 4: MISE À JOUR DE LA COUCHE CONTRÔLEUR
+[x] 4.1 Implémenter l'authentification basée sur login/password
+    [x] 4.1.1 Créer un AuthController pour gérer login/logout
+    [x] 4.1.2 Utiliser des sessions pour maintenir l'état de connexion
+[x] 4.2 Adapter LocationControleur
+    [x] 4.2.1 Implémenter le processus: login → sélection voiture → location
+[x] 4.3 Réviser VoitureControleur
+    [x] 4.3.1 Afficher uniquement les voitures DISPONIBLE et LOUEE
+    [x] 4.3.2 Permettre de louer uniquement les voitures DISPONIBLE
+[   ] 4.4 Tester les contrôleurs mis à jour
+
+## PHASE 5: ADAPTATION DE LA COUCHE VUE & INTERFACE UTILISATEUR
+[x] 5.1 Mettre à jour les templates Thymeleaf
+    [x] 5.1.1 Créer un formulaire de login avec login/password
+    [x] 5.1.2 Mettre à jour les vues de voitures avec les deux états (DISPONIBLE/LOUEE)
+    [x] 5.1.3 Adapter le processus de location
+[x] 5.2 Créer des vues pour afficher:
+    [x] 5.2.1 Les voitures et leurs états (DISPONIBLE/LOUEE)
+    [x] 5.2.2 Les voitures les plus demandées (top 3)
+[x] 5.3 Adapter le design responsive
+[x] 5.4 Implémenter un formulaire d'inscription et de login
+    [x] 5.4.1 Créer un formulaire d'inscription pour nouveaux clients
+    [x] 5.4.2 Créer un formulaire de login
+    [x] 5.4.3 Ajouter validation des formulaires côté client et serveur
+    [x] 5.4.4 Implémenter la gestion de session après login
+
+## PHASE 6: FONCTIONNALITÉS SIMPLES
+[x] 6.1 Ajouter sélecteurs de date pour la date de début de location
+[x] 6.2 Implémenter validation de formulaire côté serveur
+[x] 6.3 Créer filtres pour la recherche de voitures
+[x] 6.4 Ajouter calcul de montant basé sur la durée et le prix
+[x] 6.5 Implémenter la gestion de profil utilisateur
+    [x] 6.5.1 Permettre aux utilisateurs de voir leur profil
+    [x] 6.5.2 Permettre la modification des informations personnelles
+    [x] 6.5.3 Afficher l'historique des locations
+
+## PHASE 7: FONCTIONNALITÉS ADDITIONNELLES
+[   ] 7.1 Ajouter système d'évaluation pour les voitures
+[   ] 7.2 Implémenter notifications de fin de location
+[x] 7.3 Créer une FAQ et page d'aide
+[x] 7.4 Ajouter une page de contact
+[   ] 7.5 Implémenter une fonction de recherche globale
+
+## PHASE 8: TESTS
+[   ] 8.1 Créer tests unitaires pour les fonctions principales
+[   ] 8.2 Effectuer tests manuels de l'interface client
+[   ] 8.3 Tester les cas limites et la validation
+[   ] 8.4 Corriger les bugs trouvés
+
+## PHASE 9: DOCUMENTATION
+[   ] 9.1 Créer guide utilisateur pour les clients
+[   ] 9.2 Documenter l'architecture technique adaptée
+[   ] 9.3 Créer documentation pour la maintenance
+
+## MODIFICATIONS PRINCIPALES PAR RAPPORT AU PLAN INITIAL
+1. **Fusion des tables clients et users**:
+   - Création d'une nouvelle table personne qui combine clients et users
+   - Ajout d'un champ role pour distinguer les types d'utilisateurs
+
+2. **Système d'authentification amélioré**:
+   - Utilisation de login/password pour l'authentification
+   - Mise en place de sessions pour la gestion des connexions
+
+3. **Processus de location révisé**:
+   - Connexion obligatoire avant location
+   - Utilisation de l'id_personne au lieu du cin comme clé étrangère
+
+4. **Affichage des voitures**:
+   - Affichage uniquement des voitures DISPONIBLE et LOUEE
+   - Les voitures en PANNE ne sont pas visibles pour les clients
+
+5. **Séparation des rôles**:
+   - Les clients peuvent uniquement voir et louer des voitures
+   - L'ajout, modification, suppression des voitures et gestion des pénalités sont réservés aux administrateurs (via l'autre application)
+   - Distinction claire entre clients et administrateurs par le champ role
+
+## ÉTAT D'AVANCEMENT
+- Phase 1 à commencer (nouvelle structure à implémenter)
+- Phase 2 à commencer (nouvelle structure à implémenter)
+- Phase 3 à commencer (nouvelle structure à implémenter)
+- Phase 4 à commencer (nouvelle structure à implémenter)
+- Phase 5 à commencer (nouvelle structure à implémenter)
+- Phase 6 à commencer (nouvelle structure à implémenter)
+- 0% du projet implémenté - démarrage de zéro
+
+## INSTRUCTIONS D'EXÉCUTION
+Pour exécuter le projet avec la nouvelle structure:
+
+1. Assurez-vous que votre base de données Oracle est configurée avec les bons identifiants:
+   - username="c##loc"
+   - password="loc"
+
+2. Exécutez le script SQL schema_and_data.sql pour créer et peupler la base de données
+
+3. Créez un dossier `/src/main/resources/static/images` et ajoutez:
+   - Une image de bannière nommée `banner.jpg` pour la page d'accueil
+   - Des images de voitures qui seront référencées par la base de données
+
+4. Exécutez les commandes suivantes dans le terminal:
+   ```bash
+   # Compiler le projet avec Maven Wrapper
+   .\mvnw.cmd clean package
+   
+   # Démarrer l'application
+   .\mvnw.cmd spring-boot:run
+   ```
+
+5. Accédez à l'application dans votre navigateur:
+   ```
+   http://localhost:8080
+   ```

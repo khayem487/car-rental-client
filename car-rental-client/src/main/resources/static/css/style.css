@@ -1,0 +1,170 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+footer {
+    margin-top: 50px;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Table Styles */
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.4em 0.6em;
+    font-weight: 500;
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+/* Home Page */
+.welcome-banner {
+    background-color: #0d6efd;
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+    margin-bottom: 40px;
+    border-radius: 8px;
+}
+
+/* Voiture Cards */
+.voiture-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+/* Profile Page */
+.profile-icon {
+    font-size: 100px;
+    color: #0d6efd;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 160px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+}
+
+/* Styles pour les placeholders de voitures */
+.car-placeholder {
+    background-color: #3498db;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.car-placeholder-sm {
+    width: 50px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.car-placeholder-lg {
+    height: 200px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Couleurs par marque de voiture - pour une personnalisation future */
+.car-brand-renault { background-color: #FFCC33; }
+.car-brand-peugeot { background-color: #0055A5; }
+.car-brand-citroen { background-color: #FF0000; }
+.car-brand-bmw { background-color: #0066B1; }
+.car-brand-mercedes { background-color: #333333; }
+.car-brand-audi { background-color: #BB0A30; }
+.car-brand-volkswagen { background-color: #00447C; }
+.car-brand-toyota { background-color: #EB0A1E; }
+.car-brand-ford { background-color: #2D96CD; }
+.car-brand-default { background-color: #3498db; }
+
+/* Animation pour les éléments interactifs */
+.btn, .nav-link, .card, .dropdown-item {
+    transition: all 0.3s ease;
+} 

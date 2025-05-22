@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<!-- 
+  Template Thymeleaf pour le formulaire de création d'une nouvelle location
+  Ce template reçoit du contrôleur:
+  - Un objet 'voiture' (la voiture à louer)
+  - Un objet 'location' vide pour le formulaire
+-->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(~{::title}, ~{::div.content})}">
+<head>
+    <!-- Le titre de la page sera injecté dans le layout -->
+    <title>Nouvelle Location - Loc Auto</title>
+</head>
+<body>
+    <div class="content">
+        <!-- 
+          BREADCRUMB: Fil d'Ariane pour la navigation
+          - Les liens utilisent @{...} pour générer les URLs
+          - th:href="@{/voitures/{mat}(mat=${voiture.mat})}" génère un URL comme /voitures/ABC123
+          - th:text affiche dynamiquement la marque et le modèle de la voiture
+        -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="/voitures">Voitures</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/voitures/{mat}(mat=${voiture.mat})}" th:text="${voiture.marque + ' ' + voiture.model}">Détails</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nouvelle location</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-key"></i> Nouvelle location</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- 
+                          INFORMATION VOITURE: Résumé des détails de la voiture à louer
+                          - Utilise les propriétés de l'objet 'voiture' fourni par le contrôleur
+                          - L'image utilise l'immatriculation pour construire le chemin du fichier
+                        -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <!-- Construction dynamique du chemin de l'image avec l'immatriculation -->
+                                <img th:src="@{'/images/cars/' + ${voiture.mat} + '.jpg'}" alt="Voiture" src="/images/cars/default.jpg" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-8">
+                                <!-- Affichage de la marque et du modèle concaténés -->
+                                <h5 th:text="${voiture.marque + ' ' + voiture.model}">Marque Modèle</h5>
+                                <p>
+                                    <span class="badge bg-success">DISPONIBLE</span>
+                                </p>
+                                <ul class="list-unstyled">
+                                    <!-- Affichage des caractéristiques avec des icônes -->
+                                    <li><i class="fas fa-id-card"></i> <span th:text="${voiture.mat}">XX-000-XX</span></li>
+                                    <li><i class="fas fa-users"></i> <span th:text="${voiture.nbplace + ' places'}">5 places</span></li>
+                                    <li><i class="fas fa-euro-sign"></i> <span th:text="${voiture.prix + ' € / jour'}">50 € / jour</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 
+                          FORMULAIRE DE LOCATION:
+                          - th:action définit l'URL de destination avec l'immatriculation
+                          - method="post" indique qu'il s'agit d'une requête POST
+                          - Les champs du formulaire correspondent aux @RequestParam du contrôleur
+                        -->
+                        <form th:action="@{/locations/new/{mat}(mat=${voiture.mat})}" method="post">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Merci de remplir le formulaire ci-dessous pour finaliser votre location.
+                            </div>
+
+                            <!-- 
+                              CHAMP: Date de début
+                              - name="dteDeb" correspond au paramètre @RequestParam Date dteDeb du contrôleur
+                              - th:min définit dynamiquement la date minimum (aujourd'hui)
+                              - required ajoute une validation côté client
+                            -->
+                            <div class="mb-3">
+                                <label for="dteDeb" class="form-label">Date de début de location *</label>
+                                <input type="date" class="form-control" id="dteDeb" name="dteDeb" th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
+                                <div class="form-text">La date doit être aujourd'hui ou ultérieure.</div>
+                            </div>
+                            
+                            <!-- 
+                              CHAMP: Durée
+                              - name="duree" correspond au paramètre @RequestParam int duree du contrôleur
+                              - min/max ajoutent des contraintes de validation côté client
+                              - value="1" définit une valeur par défaut
+                            -->
+                            <div class="mb-3">
+                                <label for="duree" class="form-label">Durée de location (jours) *</label>
+                                <input type="number" class="form-control" id="duree" name="duree" min="1" max="30" value="1" required>
+                                <div class="form-text">La durée maximale est de 30 jours.</div>
+                            </div>
+                            
+                            <!-- 
+                              CHAMP: Montant (calculé dynamiquement par JavaScript)
+                              - readonly car c'est un champ informatif, pas envoyé au serveur
+                              - la valeur initiale est le prix journalier de la voiture
+                            -->
+                            <div class="mb-3">
+                                <label for="montant" class="form-label">Montant total estimé</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                    <input type="text" class="form-control" id="montant" th:value="${voiture.prix}" readonly>
+                                </div>
+                                <div class="form-text">Ce montant est calculé automatiquement en fonction de la durée.</div>
+                            </div>
+                            
+                            <!-- 
+                              CHAMP: Numéro de chèque
+                              - name="cheque" correspond au paramètre @RequestParam String cheque du contrôleur
+                              - placeholder fournit un exemple de format attendu
+                            -->
+                            <div class="mb-3">
+                                <label for="cheque" class="form-label">Numéro de chèque / carte bancaire *</label>
+                                <input type="text" class="form-control" id="cheque" name="cheque" placeholder="Ex: CHEQUE12345 ou CB7890" required>
+                                <div class="form-text">Cette référence sera utilisée pour le paiement.</div>
+                            </div>
+                            
+                            <!-- Checkbox pour les conditions (validation côté client uniquement) -->
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="conditionsCheck" required>
+                                <label class="form-check-label" for="conditionsCheck">J'accepte les conditions générales de location *</label>
+                            </div>
+
+                            <!-- 
+                              BOUTONS:
+                              - Le bouton submit envoie le formulaire au contrôleur
+                              - Le lien d'annulation redirige vers la page détails de la voiture
+                            -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check-circle"></i> Confirmer la location
+                                </button>
+                                <a th:href="@{/voitures/{mat}(mat=${voiture.mat})}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times-circle"></i> Annuler
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 
+      SCRIPT JAVASCRIPT:
+      - th:inline="javascript" permet d'intégrer des valeurs Thymeleaf dans JavaScript
+      - [[${voiture.prix}]] insère le prix de la voiture dans le script JavaScript
+      - Calcule automatiquement le montant total en fonction de la durée
+    -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupération du prix journalier depuis le modèle Thymeleaf
+            const prixJour = [[${voiture.prix}]];
+            const dureeInput = document.getElementById('duree');
+            const montantInput = document.getElementById('montant');
+            
+            // Définir la date minimale sur aujourd'hui
+            const dateInput = document.getElementById('dteDeb');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            dateInput.value = today;
+            
+            // Mise à jour du montant lors du changement de durée
+            dureeInput.addEventListener('input', function() {
+                const duree = parseInt(this.value) || 1;
+                const total = prixJour * duree;
+                montantInput.value = total;
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - Loc Auto</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Header and Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-car"></i> Loc Auto
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Navigation for logged in users -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" th:if="${session.user != null}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/"><i class="fas fa-home"></i> Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/voitures"><i class="fas fa-car"></i> Voitures</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/locations"><i class="fas fa-key"></i> Mes Locations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/contact"><i class="fas fa-envelope"></i> Contact</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- User account dropdown for logged in users -->
+                    <ul class="navbar-nav" th:if="${session.user != null}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> <span th:text="${session.user.prenom + ' ' + session.user.nom}">User</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="fas fa-id-card"></i> Mon Profil</a></li>
+                                <li><a class="dropdown-item" href="/locations/actives"><i class="fas fa-car-side"></i> Locations en cours</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <!-- Login/Register links for non-logged in users -->
+                    <ul class="navbar-nav" th:if="${session.user == null}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Connexion</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/signup"><i class="fas fa-user-plus"></i> Inscription</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Content -->
+        <div class="content">
+            <!-- Banner Section - Couleur de fond au lieu d'une image -->
+            <section class="mb-5">
+                <div class="p-5 text-center rounded-3" style="background-color: #0d6efd; height: 400px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-white">
+                            <h1 class="mb-3">Bienvenue chez Loc Auto</h1>
+                            <h4 class="mb-4">La référence en location de voitures</h4>
+                            <a class="btn btn-light btn-lg" href="/voitures" role="button">
+                                <i class="fas fa-search"></i> Découvrir nos voitures
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Welcome Section -->
+            <section class="mb-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h2>Bonjour <span th:text="${personne.prenom}">Client</span> !</h2>
+                            <p class="lead">Que souhaitez-vous faire aujourd'hui ?</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">Louer une voiture</h3>
+                                    <p class="card-text">Parcourez notre catalogue de voitures disponibles et effectuez une location en quelques clics.</p>
+                                    <a href="/voitures/disponibles" class="btn btn-primary">
+                                        <i class="fas fa-car-side"></i> Voir les voitures disponibles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-key fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">Mes locations</h3>
+                                    <p class="card-text">Consultez vos locations en cours et passées, ou restituez une voiture.</p>
+                                    <a href="/locations" class="btn btn-primary">
+                                        <i class="fas fa-list"></i> Voir mes locations
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                                    <h3 class="card-title">Mon profil</h3>
+                                    <p class="card-text">Consultez et modifiez vos informations personnelles.</p>
+                                    <a href="/profile" class="btn btn-primary">
+                                        <i class="fas fa-id-card"></i> Gérer mon profil
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Active Rentals Section -->
+            <section class="mb-5" th:if="${locationsActives != null && !locationsActives.isEmpty()}">
+                <div class="container">
+                    <h2 class="mb-4"><i class="fas fa-car-side"></i> Mes locations en cours</h2>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Voiture</th>
+                                    <th>Date de début</th>
+                                    <th>Durée</th>
+                                    <th>Date de fin</th>
+                                    <th>Montant</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="location : ${locationsActives}">
+                                    <td>
+                                        <span th:if="${location.voiture != null}" th:text="${location.voiture.marque + ' ' + location.voiture.model}">Marque Modèle</span>
+                                        <span th:unless="${location.voiture != null}">Voiture non disponible</span>
+                                        <br>
+                                        <small class="text-muted" th:text="${location.mat}">Immatriculation</small>
+                                    </td>
+                                    <td th:text="${#dates.format(location.dteDeb, 'dd/MM/yyyy')}">01/01/2025</td>
+                                    <td th:text="${location.duree + ' jours'}">7 jours</td>
+                                    <td th:text="${#dates.format(location.getDateFin(), 'dd/MM/yyyy')}">08/01/2025</td>
+                                    <td th:text="${location.getMontantTotal() + ' €'}">350 €</td>
+                                    <td>
+                                        <a th:href="@{/locations/{id}(id=${location.id_location})}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Détails
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Popular Cars Section -->
+            <section class="mb-5" th:if="${voituresPopulaires != null && !voituresPopulaires.isEmpty()}">
+                <div class="container">
+                    <h2 class="mb-4"><i class="fas fa-star"></i> Voitures les plus demandées</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-4" th:each="voiture : ${voituresPopulaires}">
+                            <div class="card h-100">
+                                <!-- Remplacé l'image par une div colorée -->
+                                <div class="card-img-top d-flex align-items-center justify-content-center" 
+                                     style="background-color: #3498db; height: 200px;">
+                                    <h3 class="text-white" th:text="${voiture.marque} + ' ' + ${voiture.model}">Marque Modèle</h3>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${voiture.marque + ' ' + voiture.model}">Marque Modèle</h5>
+                                    <p class="card-text">
+                                        <span class="badge" th:classappend="${voiture.disp == 'DISPONIBLE' ? 'bg-success' : 'bg-danger'}" th:text="${voiture.disp}">État</span>
+                                        <br>
+                                        <i class="fas fa-users"></i> <span th:text="${voiture.nbplace + ' places'}">5 places</span>
+                                        <br>
+                                        <i class="fas fa-euro-sign"></i> <span th:text="${voiture.prix + ' € / jour'}">50 € / jour</span>
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a th:href="@{/voitures/{mat}(mat=${voiture.mat})}" class="btn btn-primary w-100">
+                                        <i class="fas fa-info-circle"></i> Détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Loc Auto</h5>
+                    <p>Service de location de voitures professionnelles pour tous vos besoins.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liens rapides</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white">Accueil</a></li>
+                        <li><a href="/voitures" class="text-white">Nos Voitures</a></li>
+                        <li><a href="/about" class="text-white">À Propos</a></li>
+                        <li><a href="/contact" class="text-white">Contact</a></li>
+                        <li><a href="/faq" class="text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <address>
+                        <i class="fas fa-map-marker-alt"></i> 123 Rue Principale, Ville<br>
+                        <i class="fas fa-phone"></i> +33 1 23 45 67 89<br>
+                        <i class="fas fa-envelope"></i> contact@locauto.com
+                    </address>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 Loc Auto. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html> 

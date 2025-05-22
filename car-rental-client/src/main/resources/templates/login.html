@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Loc Auto</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-logo">
+                <i class="fas fa-car"></i> Loc Auto
+            </div>
+            
+            <!-- Alert messages -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle"></i> <span th:text="${success}">Success message</span>
+            </div>
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error message</span>
+            </div>
+            
+            <h3 class="text-center mb-4">Connexion</h3>
+            
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label for="login" class="form-label">Identifiant</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control" id="login" name="login" placeholder="Votre identifiant" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="passwd" class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="passwd" name="passwd" placeholder="Votre mot de passe" required>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p>Pas encore de compte? <a th:href="@{/signup}">Inscrivez-vous</a></p>
+            </div>
+            
+            <hr>
+            
+            <div class="text-center">
+                <a th:href="@{/}" class="btn btn-link">
+                    <i class="fas fa-home"></i> Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

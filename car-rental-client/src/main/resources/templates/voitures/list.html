@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!-- 
+  Template Thymeleaf pour l'affichage de la liste des voitures
+  Ce template reçoit du contrôleur:
+  - Une liste d'objets 'voitures' à afficher
+  - Un 'filtreActif' indiquant le filtre actuellement appliqué
+-->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(~{::title}, ~{::div.content})}">
+<head>
+    <!-- Le titre sera injecté dans le layout -->
+    <title>Nos Voitures - Loc Auto</title>
+</head>
+<body>
+    <div class="content">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1><i class="fas fa-car"></i> Nos Voitures</h1>
+                <p class="lead">Découvrez notre flotte de véhicules disponibles à la location</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <!-- 
+                  NAVIGATION PAR FILTRES:
+                  - Liens vers différentes méthodes du VoitureController
+                  - th:classappend ajoute conditionnellement la classe 'active' au bouton du filtre actif
+                  - Chaque lien déclenche une requête GET vers une méthode différente du contrôleur
+                -->
+                <div class="btn-group" role="group">
+                    <a href="/voitures" class="btn btn-outline-primary" th:classappend="${filtreActif == null ? 'active' : ''}">
+                        <i class="fas fa-list"></i> Toutes
+                    </a>
+                    <a href="/voitures/disponibles" class="btn btn-outline-success" th:classappend="${filtreActif == 'disponibles' ? 'active' : ''}">
+                        <i class="fas fa-check-circle"></i> Disponibles
+                    </a>
+                    <a href="/voitures/louees" class="btn btn-outline-warning" th:classappend="${filtreActif == 'louees' ? 'active' : ''}">
+                        <i class="fas fa-clock"></i> Louées
+                    </a>
+                    <a href="/voitures/populaires" class="btn btn-outline-info" th:classappend="${filtreActif == 'populaires' ? 'active' : ''}">
+                        <i class="fas fa-star"></i> Populaires
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 
+          FORMULAIRE DE FILTRAGE:
+          - action="/voitures/filter" envoie la requête à la méthode filterVoitures du contrôleur
+          - method="get" indique une requête GET (les paramètres seront dans l'URL)
+          - Les champs du formulaire correspondent aux @RequestParam du contrôleur
+        -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-filter"></i> Filtres</h5>
+            </div>
+            <div class="card-body">
+                <form action="/voitures/filter" method="get" class="row g-3">
+                    <!-- 
+                      Filtre par marque:
+                      - name="marque" correspond au @RequestParam String marque du contrôleur
+                    -->
+                    <div class="col-md-4">
+                        <label for="marque" class="form-label">Marque</label>
+                        <input type="text" class="form-control" id="marque" name="marque" placeholder="Ex: Renault, Peugeot...">
+                    </div>
+                    <!-- 
+                      Filtre par nombre de places:
+                      - name="nbplace" correspond au @RequestParam int nbplace du contrôleur
+                      - La valeur 0 signifie "pas de filtre" dans le contrôleur
+                    -->
+                    <div class="col-md-3">
+                        <label for="nbplace" class="form-label">Nombre de places</label>
+                        <select class="form-select" id="nbplace" name="nbplace">
+                            <option value="0">Tous</option>
+                            <option value="2">2 places</option>
+                            <option value="4">4 places</option>
+                            <option value="5">5 places</option>
+                            <option value="7">7 places ou plus</option>
+                        </select>
+                    </div>
+                    <!-- 
+                      Filtre par prix maximum:
+                      - name="prixMax" correspond au @RequestParam double prixMax du contrôleur
+                    -->
+                    <div class="col-md-3">
+                        <label for="prixMax" class="form-label">Prix max par jour</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="prixMax" name="prixMax" placeholder="Ex: 100">
+                            <span class="input-group-text">€</span>
+                        </div>
+                    </div>
+                    <!-- Bouton de soumission du formulaire -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Filtrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 
+          AFFICHAGE CONDITIONNEL: Message si aucune voiture
+          - th:if="${voitures.isEmpty()}" évalue la condition: la liste est-elle vide?
+          - L'alerte n'est affichée que si la condition est vraie
+        -->
+        <div class="alert alert-info" th:if="${voitures.isEmpty()}">
+            <i class="fas fa-info-circle"></i> Aucune voiture ne correspond à vos critères.
+        </div>
+
+        <!-- 
+          LISTE DES VOITURES: Affichage en boucle
+          - th:if="${!voitures.isEmpty()}" n'affiche ce bloc que si la liste contient des éléments
+          - th:each="voiture : ${voitures}" crée une boucle pour chaque voiture dans la liste
+        -->
+        <div class="row" th:if="${!voitures.isEmpty()}">
+            <!-- Pour chaque voiture dans la liste, créer une carte -->
+            <div class="col-md-4 mb-4" th:each="voiture : ${voitures}">
+                <div class="card h-100">
+                    <!-- 
+                      Badge d'état dynamique:
+                      - th:classappend attribue une classe différente selon l'état de la voiture
+                      - th:text affiche la valeur de l'état (DISPONIBLE ou LOUEE)
+                    -->
+                    <div class="position-absolute" style="top: 10px; right: 10px; z-index: 100;">
+                        <span class="badge" th:classappend="${voiture.disp == 'DISPONIBLE' ? 'bg-success' : 'bg-danger'}" th:text="${voiture.disp}">État</span>
+                    </div>
+                    <!-- 
+                      Gestion conditionnelle des images:
+                      - th:if vérifie si une image personnalisée existe
+                      - Sinon, affiche un placeholder générique
+                    -->
+                    <div th:if="${voiture.imagePath != null && voiture.imagePath != 'default.jpg'}" class="position-relative">
+                        <img class="card-img-top" th:src="@{'/images/cars/' + ${voiture.imagePath}}" alt="Voiture" height="200">
+                    </div>
+                    <div th:if="${voiture.imagePath == null || voiture.imagePath == 'default.jpg'}" class="position-relative">
+                        <div th:class="'car-placeholder car-placeholder-lg ' + (${voiture.marque != null} ? ${'car-brand-' + voiture.marque.toLowerCase()} : 'car-brand-default')">
+                            <i class="fas fa-car fa-3x"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- 
+                          Affichage des données de la voiture:
+                          - th:text affiche le contenu dynamique
+                          - ${voiture.propriété} accède aux propriétés de l'objet
+                        -->
+                        <h5 class="card-title" th:text="${voiture.marque + ' ' + voiture.model}">Marque Modèle</h5>
+                        <p class="card-text">
+                            <small class="text-muted" th:text="${'Immatriculation: ' + voiture.mat}">Immatriculation</small>
+                            <br>
+                            <i class="fas fa-users"></i> <span th:text="${voiture.nbplace + ' places'}">5 places</span>
+                            <br>
+                            <i class="fas fa-euro-sign"></i> <span th:text="${voiture.prix + ' € / jour'}">50 € / jour</span>
+                        </p>
+                    </div>
+                    <div class="card-footer d-grid">
+                        <!-- 
+                          Lien vers les détails de la voiture:
+                          - th:href génère l'URL dynamique avec l'immatriculation
+                          - Envoie une requête GET à la méthode getVoitureDetails du contrôleur
+                        -->
+                        <a th:href="@{/voitures/{mat}(mat=${voiture.mat})}" class="btn btn-primary">
+                            <i class="fas fa-info-circle"></i> Détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
