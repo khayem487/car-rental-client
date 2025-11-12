@@ -1,10 +1,22 @@
-# --- Ignore generated or build files for language stats ---
-*.class linguist-vendored
-*.jar linguist-vendored
-*.log linguist-vendored
-*.xml linguist-vendored
+# --- Ignore generated, build, and wrapper files for language stats ---
+
+# Maven and build folders
 target/* linguist-vendored
 build/* linguist-vendored
 out/* linguist-vendored
-.gradle/* linguist-vendored
+.mvn/* linguist-vendored
+mvnw linguist-vendored
+mvnw.cmd linguist-vendored
+maven-wrapper.jar linguist-vendored
+maven-wrapper.properties linguist-vendored
+maven-wrapper.zip linguist-vendored
+maven-wrapper-maven-wrapper-* linguist-vendored
+
+# IDE and local environment folders
 .idea/* linguist-vendored
+.vscode/* linguist-vendored
+
+# Config and metadata
+*.xml linguist-vendored
+*.log linguist-vendored
+*.class linguist-vendored
