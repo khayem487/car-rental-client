@@ -45,3 +45,5 @@ This application is the client-facing part of a car rental system. The database 
 ## License
 
 [MIT License](LICENSE) 
+
+<!-- trigger linguist rescan -->
