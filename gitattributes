@@ -1,0 +1,10 @@
+# --- Ignore generated or build files for language stats ---
+*.class linguist-vendored
+*.jar linguist-vendored
+*.log linguist-vendored
+*.xml linguist-vendored
+target/* linguist-vendored
+build/* linguist-vendored
+out/* linguist-vendored
+.gradle/* linguist-vendored
+.idea/* linguist-vendored
