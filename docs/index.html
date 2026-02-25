@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Rental Client Application · Khayem</title>
+  <style>
+    :root { --bg:#0b1220; --panel:#0f172a; --txt:#e2e8f0; --muted:#94a3b8; --brand:#3b82f6; }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(160deg,#0b1220,#0a1020);color:var(--txt)}
+    .wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+    .card{background:rgba(15,23,42,.78);border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:24px;margin-bottom:18px}
+    h1{margin:0 0 8px;font-size:2rem} h2{margin:0 0 10px;font-size:1.1rem} p,li{color:var(--muted);line-height:1.55}
+    .tag{display:inline-block;background:rgba(59,130,246,.2);border:1px solid rgba(96,165,250,.4);padding:6px 10px;border-radius:999px;margin:6px 6px 0 0;font-size:.85rem}
+    .btn{display:inline-block;text-decoration:none;color:#eff6ff;background:var(--brand);padding:10px 14px;border-radius:10px;font-weight:600;margin-right:8px}
+    code{background:#0b1328;padding:2px 6px;border-radius:6px;color:#c7d2fe}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Car Rental Client Application</h1>
+      <p>Client-facing web application for browsing vehicles, booking rentals, and managing profile/history.</p>
+      <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Thymeleaf</span><span class="tag">Oracle DB</span>
+      <div style="margin-top:16px">
+        <a class="btn" href="https://github.com/khayem487/car-rental-client" target="_blank" rel="noreferrer">Source Code</a>
+        <a class="btn" href="https://khayem487.github.io/portfolio/" target="_blank" rel="noreferrer">Portfolio</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>What it includes</h2>
+      <ul>
+        <li>User authentication and profile management</li>
+        <li>Vehicle catalog browsing with filters</li>
+        <li>Rental reservation workflow</li>
+        <li>Rental history tracking</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Run locally</h2>
+      <p>This project requires a Java backend + Oracle database, so GitHub Pages hosts an overview page only.</p>
+      <p><code>cd car-rental-client/car-rental-client</code></p>
+      <p><code>./mvnw clean package</code> then <code>./mvnw spring-boot:run</code></p>
+      <p>App URL: <code>http://localhost:8080</code></p>
+    </div>
+  </div>
+</body>
+</html>
