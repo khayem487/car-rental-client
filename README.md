@@ -5,8 +5,10 @@ A web-based car rental system for clients to browse available cars, make reserva
 ## Technologies Used
 
 - Backend: Java + Spring Boot + JDBC
-- Database: Oracle DB
 - Frontend: Thymeleaf + CSS + JavaScript
+- Databases:
+  - Oracle DB (original stack)
+  - H2 in-memory (demo profile for free cloud hosting)
 - Build Tool: Maven
 
 ## Features
@@ -18,32 +20,47 @@ A web-based car rental system for clients to browse available cars, make reserva
 - Rental history tracking
 - Responsive design
 
-## Setup Instructions
+## Free Cloud Demo (Render)
 
-1. Database Configuration:
-   - Oracle DB with username="c##loc", password="loc"
-   - Run `schema_and_data.sql` to create and populate the database
+This repository includes a `render.yaml` + `Dockerfile` and an H2-backed `demo` Spring profile.
 
-2. Run the Application:
-   ```bash
-   # Change directory to car-rental-client
-   cd car-rental-client
-   
-   # Compile the project
-   ./mvnw clean package
-   
-   # Start the application
-   ./mvnw spring-boot:run
-   ```
+- Deploy button (free tier):
 
-3. Access the application at `http://localhost:8080`
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/khayem487/car-rental-client)
+
+> Render free web services may sleep after inactivity.
+
+## Run Locally
+
+### Option A — Original Oracle mode
+
+1. Configure Oracle DB with:
+   - username: `c##loc`
+   - password: `loc`
+2. Initialize schema/data from `car-rental-client/src/main/resources/schema_and_data.sql`
+3. Run:
+
+```bash
+cd car-rental-client
+./mvnw clean package
+./mvnw spring-boot:run
+```
+
+### Option B — Demo mode (H2, no Oracle required)
+
+```bash
+cd car-rental-client
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
+```
+
+Then open: `http://localhost:8080`
 
 ## Project Structure
 
-This application is the client-facing part of a car rental system. The database is shared with a separate administrative application that manages aspects like penalties and car maintenance.
+This application is the client-facing part of a car rental system. The database can be Oracle (full setup) or H2 (demo profile).
 
 ## License
 
-[MIT License](LICENSE) 
+[MIT License](LICENSE)
 
 <!-- trigger linguist rescan -->
