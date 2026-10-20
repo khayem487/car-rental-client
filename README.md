@@ -64,3 +64,25 @@ This application is the client-facing part of a car rental system. The database 
 [MIT License](LICENSE)
 
 <!-- trigger linguist rescan -->
+
+## Real application on Vercel
+
+The same Spring Boot / JDBC / Thymeleaf application is available at:
+
+**https://khayem-car-rental.vercel.app/**
+
+`Dockerfile.vercel` builds the Java application with Maven and runs the existing `demo` Spring profile. It uses the original seeded H2 database, real login sessions, catalogue queries, reservations and rental history. The forwarded-header setting preserves HTTPS redirects behind the Vercel proxy.
+
+```sh
+npx vercel@64.7.0 deploy --prod
+```
+
+H2 is in memory, as in the original Render demonstration: a restarted instance begins with the seed data. Reservations are demonstration data, and no payment is collected. Vercel containers scale down after five minutes without traffic; the public URL remains available, with a possible cold start. This is not a promise of a continuously running JVM.
+
+Verification on 20 October 2026: the local `DemoRentalFlowTest` and deployed `scripts/verify-live.ps1` passed login, catalogue, reservation, history, return and logout using the existing fictional demo account. The public test released its vehicle afterward. A measured initial login request took 1.45 seconds; this single observation is not an uptime or latency guarantee.
+
+```powershell
+./scripts/verify-live.ps1 -BaseUrl https://khayem-car-rental.vercel.app
+```
+
+Render configuration is retained as a fallback. Git integration is optional; direct authenticated Vercel CLI publication works.

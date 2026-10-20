@@ -41,4 +41,8 @@ build/
 
 ### OS specific files ###
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Local Vercel project metadata and build output
+.vercel/
+.vercel

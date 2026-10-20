@@ -1,0 +1,17 @@
+{
+  "services": {
+    "car-rental-client-demo": {
+      "root": ".",
+      "entrypoint": "Dockerfile.vercel"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "car-rental-client-demo"
+      }
+    }
+  ]
+}
