@@ -51,14 +51,14 @@
                         <div class="form-grid">
                             <div class="field">
                                 <label for="passwd">Mot de passe</label>
-                                <input type="password" id="passwd" name="passwd" autocomplete="new-password" minlength="8" maxlength="100" required>
+                                <input type="password" id="passwd" name="passwd" autocomplete="new-password" minlength="8" maxlength="72" required>
                             </div>
                             <div class="field">
                                 <label for="confirmPasswd">Confirmer le mot de passe</label>
-                                <input type="password" id="confirmPasswd" name="confirmPasswd" autocomplete="new-password" minlength="8" maxlength="100" required>
+                                <input type="password" id="confirmPasswd" name="confirmPasswd" autocomplete="new-password" minlength="8" maxlength="72" required>
                             </div>
                         </div>
-                        <p class="micro">8 caractères minimum. Choisissez un mot de passe de test.</p>
+                        <p class="micro">8 caractères minimum, 72 octets UTF-8 maximum. Choisissez un mot de passe de test.</p>
                         <button class="button full" type="submit">Créer mon compte ↗</button>
                     </form>
                     <p class="form-foot">Déjà un compte ? <a th:href="@{/login}">Se connecter</a>

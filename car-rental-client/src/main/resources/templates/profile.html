@@ -11,7 +11,7 @@
                 <div class="section-heading">
                     <h1 class="page-title">Bonjour, <em th:text="${personne.prenom}">
                         </em>.</h1>
-                    <a class="text-link" th:href="@{/logout}">Se déconnecter ↗</a>
+                    <form th:action="@{/logout}" method="post"><button class="button button-outline" type="submit">Se déconnecter ↗</button></form>
                 </div>
                 <div th:replace="~{layout :: alerts}">
                 </div>
@@ -47,11 +47,16 @@
                                     <input id="numero" name="numero" th:value="${personne.numero}" maxlength="20" required>
                                 </div>
                             </div>
-                            <div class="field">
+                            <div class="field" th:unless="${googleAccount}">
                                 <label for="passwd">Nouveau mot de passe (facultatif)</label>
-                                <input type="password" id="passwd" name="passwd" autocomplete="new-password" minlength="8" maxlength="100" placeholder="Laisser vide pour le conserver">
+                                <input type="password" id="passwd" name="passwd" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Laisser vide pour le conserver">
                                 <small>Votre mot de passe actuel n’est jamais affiché dans le formulaire.</small>
                             </div>
+                            <div class="form-grid" th:unless="${googleAccount}">
+                                <div class="field"><label for="currentPasswd">Mot de passe actuel (pour le changer)</label><input type="password" id="currentPasswd" name="currentPasswd" autocomplete="current-password" maxlength="72"></div>
+                                <div class="field"><label for="confirmNewPasswd">Confirmer le nouveau mot de passe</label><input type="password" id="confirmNewPasswd" name="confirmNewPasswd" autocomplete="new-password" maxlength="72"></div>
+                            </div>
+                            <p class="micro" th:if="${googleAccount}">Connexion Google : votre mot de passe se gère auprès de Google. L’identité Google ne vérifie pas votre permis de conduire.</p>
                             <button class="button" type="submit">Enregistrer les modifications ↗</button>
                         </form>
                     </div>

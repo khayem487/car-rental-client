@@ -5,6 +5,7 @@ import com.carrental.client.model.Personne;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ public class PersonneService {
      * Accès aux données des personnes
      */
     private final PersonneDAO personneDAO;
+    private final PasswordEncoder passwords;
 
     /**
      * Constructeur avec injection de dépendance pour le DAO des personnes.
@@ -38,21 +40,23 @@ public class PersonneService {
      * @param personneDAO DAO pour l'accès aux données des personnes
      */
     @Autowired
-    public PersonneService(PersonneDAO personneDAO) {
+    public PersonneService(PersonneDAO personneDAO, PasswordEncoder passwords) {
         this.personneDAO = personneDAO;
+        this.passwords = passwords;
     }
 
     /**
      * Authentifie un utilisateur en vérifiant ses identifiants.
-     * Cette méthode délègue la vérification au DAO qui effectue la requête
-     * à la base de données pour confirmer la correspondance login/mot de passe.
+     * Charge le compte par login puis vérifie son hachage BCrypt. Aucune comparaison
+     * de mot de passe en clair n'est exécutée dans une requête SQL.
      * 
      * @param login Identifiant de connexion de l'utilisateur
-     * @param passwd Mot de passe de l'utilisateur (non chiffré dans cette version)
+     * @param passwd Mot de passe reçu pour vérification, jamais persisté en clair
      * @return Optional contenant l'utilisateur si authentification réussie, vide sinon
      */
     public Optional<Personne> authentifier(String login, String passwd) {
-        return personneDAO.authentifier(login, passwd);
+        return personneDAO.findByLogin(login).filter(person -> "CLIENT".equals(person.getRole()))
+            .filter(person -> passwords.matches(passwd, person.getPasswd()));
     }
 
     /**
@@ -95,6 +99,7 @@ public class PersonneService {
         // INITIALISATION: Configurer les valeurs par défaut pour un nouveau client
         personne.setRole("CLIENT");  // Rôle par défaut pour les utilisateurs de cette interface
         personne.setNbloc(0);        // Nombre initial de locations = 0
+        personne.setPasswd(passwords.encode(personne.getPasswd()));
         
         // PERSISTANCE: Enregistrer le nouvel utilisateur
         return personneDAO.save(personne);
@@ -111,6 +116,7 @@ public class PersonneService {
      * @param personne Objet Personne avec les nouvelles informations
      * @throws IllegalArgumentException si l'utilisateur n'existe pas
      */
+    @Transactional
     public void mettreAJour(Personne personne) {
         // VALIDATION: Vérifier que l'utilisateur existe
         Optional<Personne> existingPersonne = personneDAO.findById(personne.getId());
@@ -119,6 +125,10 @@ public class PersonneService {
             // PRÉSERVATION: Maintenir les valeurs critiques qui ne doivent pas être modifiées
             personne.setRole(existingPersonne.get().getRole());     // Empêcher le changement de rôle
             personne.setNbloc(existingPersonne.get().getNbloc());   // Préserver le compteur de locations
+            personne.setLogin(existingPersonne.get().getLogin());
+            personne.setCin(existingPersonne.get().getCin());
+            if (personne.getPasswd() == null || personne.getPasswd().isEmpty()) personne.setPasswd(existingPersonne.get().getPasswd());
+            else personne.setPasswd(passwords.encode(personne.getPasswd()));
             
             // PERSISTANCE: Mettre à jour l'utilisateur
             personneDAO.update(personne);

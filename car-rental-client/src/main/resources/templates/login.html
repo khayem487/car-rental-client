@@ -23,6 +23,13 @@
                     <h2>Se connecter</h2>
                     <div th:replace="~{layout :: alerts}">
                     </div>
+                    <p class="alert error" role="alert" th:if="${param.error}">Connexion impossible. Vérifiez vos identifiants et réessayez.</p>
+                    <p class="alert success" role="status" th:if="${param.logout}">Vous êtes déconnecté.</p>
+                    <p class="alert success" role="status" th:if="${param.passwordChanged}">Mot de passe modifié. Connectez-vous à nouveau.</p>
+                    <div th:if="${googleLoginEnabled}" class="stack">
+                        <a class="button button-outline full" th:href="@{/oauth2/authorization/google}">Continuer avec Google ↗</a>
+                        <p class="micro">Google partage votre identité et votre adresse e-mail vérifiée. Aucun paiement ni accès à Gmail.</p>
+                    </div>
                     <form th:action="@{/login}" method="post" class="stack">
                         <div class="field">
                             <label for="login">Identifiant</label>
@@ -30,7 +37,7 @@
                         </div>
                         <div class="field">
                             <label for="passwd">Mot de passe</label>
-                            <input type="password" id="passwd" name="passwd" autocomplete="current-password" placeholder="Votre mot de passe" required>
+                            <input type="password" id="passwd" name="passwd" autocomplete="current-password" placeholder="Votre mot de passe" maxlength="72" required>
                         </div>
                         <button class="button full" type="submit">Se connecter ↗</button>
                     </form>

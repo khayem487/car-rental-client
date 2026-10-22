@@ -6,7 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpSession;
@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -42,8 +43,8 @@ class LocAutoV2Test {
         }
         mvc.perform(booking("/locations/new/AA-123-BB", null, LocalDate.now(), "2", "NO-AUTH"))
                 .andExpect(redirectedUrl("/login"));
-        mvc.perform(post("/locations/1/terminer")).andExpect(redirectedUrl("/login"));
-        mvc.perform(post("/profile/update").param("nom", "Forgery")).andExpect(redirectedUrl("/login"));
+        mvc.perform(post("/locations/1/terminer").with(csrf())).andExpect(redirectedUrl("/login"));
+        mvc.perform(post("/profile/update").with(csrf()).param("nom", "Forgery")).andExpect(redirectedUrl("/login"));
     }
 
     @Test
@@ -62,7 +63,7 @@ class LocAutoV2Test {
     void localLoginRotatesTheSessionIdentifierAndDoesNotRenderItsPassword() throws Exception {
         MockHttpSession before = new MockHttpSession();
         String oldId = before.getId();
-        mvc.perform(post("/login").session(before).param("login", "sophie.martin")
+        mvc.perform(post("/login").with(csrf()).session(before).param("login", "sophie.martin")
                 .param("passwd", "password123")).andExpect(redirectedUrl("/"));
         assertThat(before.getId()).isNotEqualTo(oldId);
         mvc.perform(get("/profile").session(before)).andExpect(status().isOk())
@@ -94,7 +95,7 @@ class LocAutoV2Test {
         assertThat(user1.getCin()).startsWith("DEMO-");
         assertThat(user1.getNumero()).isEqualTo("DEMO");
         mvc.perform(get("/profile").session(first)).andExpect(status().isOk());
-        mvc.perform(post("/profile/update").session(first).param("role", "ADMIN").param("nom", "Changed"))
+        mvc.perform(post("/profile/update").with(csrf()).session(first).param("role", "ADMIN").param("nom", "Changed"))
                 .andExpect(redirectedUrl("/profile")).andExpect(flash().attributeExists("error"));
 
         String path = mvc.perform(booking("/locations/new/AA-123-BB", first, LocalDate.now(), "2", "ISOLATION"))
@@ -103,26 +104,26 @@ class LocAutoV2Test {
         try {
             mvc.perform(get(path).session(first)).andExpect(status().isOk());
             mvc.perform(get(path).session(second)).andExpect(redirectedUrl("/locations"));
-            mvc.perform(post(path + "/terminer").session(second)).andExpect(redirectedUrl("/locations"));
+            mvc.perform(post(path + "/terminer").with(csrf()).session(second)).andExpect(redirectedUrl("/locations"));
             assertThat(jdbc.queryForObject("SELECT disp FROM voiture WHERE mat='AA-123-BB'", String.class))
                     .isEqualTo("LOUEE");
             mvc.perform(get("/locations").session(second)).andExpect(model().attribute("totalLocations", 0));
-            mvc.perform(post("/demo").session(first)).andExpect(redirectedUrl("/voitures"));
+            mvc.perform(post("/demo").with(csrf()).session(first)).andExpect(redirectedUrl("/voitures"));
             assertThat(((Personne) first.getAttribute("user")).getId()).isEqualTo(user1.getId());
         } finally {
-            mvc.perform(post(path + "/terminer").session(first)).andExpect(redirectedUrl("/locations"));
+            mvc.perform(post(path + "/terminer").with(csrf()).session(first)).andExpect(redirectedUrl("/locations"));
         }
     }
 
     @Test
     void signupForcesFictionalReferencesAndClientRoleAndRejectsPasswordMismatch() throws Exception {
         String login = "test." + UUID.randomUUID().toString().substring(0, 8);
-        mvc.perform(post("/signup").param("login", login).param("nom", "Test").param("prenom", "Compte")
+        mvc.perform(post("/signup").with(csrf()).param("login", login).param("nom", "Test").param("prenom", "Compte")
                 .param("passwd", "testpassword").param("confirmPasswd", "different"))
                 .andExpect(redirectedUrl("/signup")).andExpect(flash().attributeExists("error"));
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM personne WHERE login=?", Integer.class, login))
                 .isZero();
-        mvc.perform(post("/signup").param("login", login).param("nom", "Test").param("prenom", "Compte")
+        mvc.perform(post("/signup").with(csrf()).param("login", login).param("nom", "Test").param("prenom", "Compte")
                 .param("passwd", "testpassword").param("confirmPasswd", "testpassword")
                 .param("id", "1").param("role", "ADMIN").param("nbloc", "999")
                 .param("cin", "REAL-ID-ATTEMPT").param("npermis", "REAL-LICENCE").param("numero", "123456"))
@@ -133,15 +134,15 @@ class LocAutoV2Test {
                 .isZero();
         assertThat(jdbc.queryForObject("SELECT cin FROM personne WHERE login=?", String.class, login))
                 .startsWith("DEMO-");
-        MockHttpSession session = (MockHttpSession) mvc.perform(post("/login").param("login", login)
+        MockHttpSession session = (MockHttpSession) mvc.perform(post("/login").with(csrf()).param("login", login)
                 .param("passwd", "testpassword")).andReturn().getRequest().getSession(false);
         Long id = ((Personne) session.getAttribute("user")).getId();
-        mvc.perform(post("/profile/update").session(session).param("nom", "Modifie").param("prenom", "Compte")
+        mvc.perform(post("/profile/update").with(csrf()).session(session).param("nom", "Modifie").param("prenom", "Compte")
                 .param("passwd", "").param("id", "1").param("role", "ADMIN").param("login", "admin")
                 .param("cin", "FORGED")).andExpect(redirectedUrl("/profile"));
         assertThat(jdbc.queryForObject("SELECT login FROM personne WHERE id=?", String.class, id)).isEqualTo(login);
         assertThat(jdbc.queryForObject("SELECT role FROM personne WHERE id=?", String.class, id)).isEqualTo("CLIENT");
-        assertThat(jdbc.queryForObject("SELECT passwd FROM personne WHERE id=?", String.class, id)).isEqualTo("testpassword");
+        assertThat(jdbc.queryForObject("SELECT passwd FROM personne WHERE id=?", String.class, id)).startsWith("$2");
     }
 
     @Test
@@ -180,21 +181,21 @@ class LocAutoV2Test {
                 .isEqualTo(1);
         String winningPath = pa.startsWith("/locations/") ? pa : pb;
         MockHttpSession winner = pa.startsWith("/locations/") ? first : second;
-        mvc.perform(post(winningPath + "/terminer").session(winner)).andExpect(redirectedUrl("/locations"));
+        mvc.perform(post(winningPath + "/terminer").with(csrf()).session(winner)).andExpect(redirectedUrl("/locations"));
         String newPath = mvc.perform(booking("/locations/new/CC-456-DD", winner, LocalDate.now(), "1", "AFTER-RETURN"))
                 .andReturn().getResponse().getRedirectedUrl();
         try {
-            mvc.perform(post(winningPath + "/terminer").session(winner))
+            mvc.perform(post(winningPath + "/terminer").with(csrf()).session(winner))
                     .andExpect(flash().attributeExists("error"));
             assertThat(jdbc.queryForObject("SELECT disp FROM voiture WHERE mat='CC-456-DD'", String.class))
                     .isEqualTo("LOUEE");
-        } finally { mvc.perform(post(newPath + "/terminer").session(winner)); }
+        } finally { mvc.perform(post(newPath + "/terminer").with(csrf()).session(winner)); }
     }
 
     private MockHttpSession demoSession() throws Exception {
         MockHttpSession before = new MockHttpSession();
         String oldId = before.getId();
-        mvc.perform(post("/demo").session(before)).andExpect(redirectedUrl("/voitures"));
+        mvc.perform(post("/demo").with(csrf()).session(before)).andExpect(redirectedUrl("/voitures"));
         assertThat(before.getId()).isNotEqualTo(oldId);
         assertThat(before.getAttribute("demoVisitor")).isEqualTo(true);
         return before;
@@ -202,7 +203,7 @@ class LocAutoV2Test {
 
     private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder booking(
             String path, MockHttpSession session, LocalDate date, String duration, String reference) {
-        var request = post(path).param("dteDeb", date.toString()).param("duree", duration).param("cheque", reference);
+        var request = post(path).with(csrf()).param("dteDeb", date.toString()).param("duree", duration).param("cheque", reference);
         return session == null ? request : request.session(session);
     }
 }

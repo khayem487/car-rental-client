@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS oidc_identity;
 DROP TABLE IF EXISTS voiture;
 DROP TABLE IF EXISTS personne;
 DROP SEQUENCE IF EXISTS seq_personne;
@@ -15,6 +16,15 @@ CREATE TABLE personne (
     login VARCHAR(50) UNIQUE NOT NULL,
     passwd VARCHAR(100) NOT NULL,
     role VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE oidc_identity (
+    provider VARCHAR(20) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    personne_id BIGINT NOT NULL UNIQUE,
+    email VARCHAR(320) NOT NULL,
+    PRIMARY KEY (provider, subject),
+    FOREIGN KEY (personne_id) REFERENCES personne(id)
 );
 
 CREATE TABLE voiture (
@@ -46,13 +56,13 @@ CREATE INDEX idx_location_personne ON location(id_personne);
 CREATE INDEX idx_location_etat ON location(etat);
 
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (1, 'CIN001', 'Dupont', 'Jean', '0601020304', 'PERMIS001', 0, 'jean.dupont', 'password123', 'CLIENT');
+VALUES (1, 'CIN001', 'Dupont', 'Jean', '0601020304', 'PERMIS001', 0, 'jean.dupont', '$2a$12$.spnWwOTR6OaIaeGbr0dQuVdv24e/BvoMpty0SBGcg8Ri0F/JYZAe', 'CLIENT');
 
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (2, 'CIN002', 'Martin', 'Sophie', '0607080910', 'PERMIS002', 0, 'sophie.martin', 'password123', 'CLIENT');
+VALUES (2, 'CIN002', 'Martin', 'Sophie', '0607080910', 'PERMIS002', 0, 'sophie.martin', '$2a$12$.spnWwOTR6OaIaeGbr0dQuVdv24e/BvoMpty0SBGcg8Ri0F/JYZAe', 'CLIENT');
 
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (3, 'CIN003', 'Admin', 'Super', '0600000000', 'ADMIN001', 0, 'admin', 'admin123', 'ADMIN');
+VALUES (3, 'CIN003', 'Admin', 'Super', '0600000000', 'ADMIN001', 0, 'admin', '$2a$12$MU57xPus9eiOUTzwtAHDL.u1PJqqBtKSaIpsZ/uO0FXhSJkRrv3iO', 'ADMIN');
 
 INSERT INTO voiture (mat, marque, model, nbplace, disp, nbloc, prix, image_path)
 VALUES ('AA-123-BB', 'Renault', 'Clio', 5, 'DISPONIBLE', 0, 50, 'renault_clio.jpg');

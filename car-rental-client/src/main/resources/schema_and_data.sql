@@ -67,13 +67,13 @@ CREATE INDEX idx_location_etat ON location(etat);
 
 -- Insertion de données d'exemple pour les personnes (clients et administrateurs)
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (seq_personne.NEXTVAL, 'CIN001', 'Dupont', 'Jean', '0601020304', 'PERMIS001', 0, 'jean.dupont', 'password123', 'CLIENT');
+VALUES (seq_personne.NEXTVAL, 'CIN001', 'Dupont', 'Jean', '0601020304', 'PERMIS001', 0, 'jean.dupont', '$2a$12$.spnWwOTR6OaIaeGbr0dQuVdv24e/BvoMpty0SBGcg8Ri0F/JYZAe', 'CLIENT');
 
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (seq_personne.NEXTVAL, 'CIN002', 'Martin', 'Sophie', '0607080910', 'PERMIS002', 0, 'sophie.martin', 'password123', 'CLIENT');
+VALUES (seq_personne.NEXTVAL, 'CIN002', 'Martin', 'Sophie', '0607080910', 'PERMIS002', 0, 'sophie.martin', '$2a$12$.spnWwOTR6OaIaeGbr0dQuVdv24e/BvoMpty0SBGcg8Ri0F/JYZAe', 'CLIENT');
 
 INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role)
-VALUES (seq_personne.NEXTVAL, 'CIN003', 'Admin', 'Super', '0600000000', 'ADMIN001', 0, 'admin', 'admin123', 'ADMIN');
+VALUES (seq_personne.NEXTVAL, 'CIN003', 'Admin', 'Super', '0600000000', 'ADMIN001', 0, 'admin', '$2a$12$MU57xPus9eiOUTzwtAHDL.u1PJqqBtKSaIpsZ/uO0FXhSJkRrv3iO', 'ADMIN');
 
 -- Insertion de données d'exemple pour les voitures
 INSERT INTO voiture (mat, marque, model, nbplace, disp, nbloc, prix, image_path)

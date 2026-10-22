@@ -99,22 +99,6 @@ public class PersonneDAO {
         return personnes.isEmpty() ? Optional.empty() : Optional.of(personnes.get(0));
     }
 
-    /**
-     * Authentifie un utilisateur en vérifiant ses identifiants.
-     * 
-     * @param login Login de l'utilisateur
-     * @param passwd Mot de passe de l'utilisateur
-     * @return Optional contenant la personne si authentification réussie, vide sinon
-     */
-    public Optional<Personne> authentifier(String login, String passwd) {
-        // Requête SQL avec deux paramètres préparés pour vérifier login et mot de passe
-        String sql = "SELECT * FROM personne WHERE login = ? AND passwd = ?";
-        
-        // Exécution de la requête avec les deux paramètres
-        List<Personne> personnes = jdbcTemplate.query(sql, new PersonneRowMapper(), login, passwd);
-        
-        return personnes.isEmpty() ? Optional.empty() : Optional.of(personnes.get(0));
-    }
 
     /**
      * Enregistre un nouvel utilisateur dans la base de données.

@@ -4,7 +4,7 @@ A web-based car rental system for clients to browse available cars, make reserva
 
 ## Technologies Used
 
-- Backend: Java + Spring Boot + JDBC
+- Backend: Java 17 + Spring Boot 4.1 + Spring Security + JDBC
 - Frontend: Thymeleaf + CSS + JavaScript
 - Databases:
   - Oracle DB (original stack)
@@ -13,7 +13,8 @@ A web-based car rental system for clients to browse available cars, make reserva
 
 ## Features
 
-- User authentication (login/registration)
+- User authentication (login/registration, BCrypt passwords and CSRF protection)
+- Optional Google OpenID Connect login, enabled only when its server credentials are configured
 - Browse available cars with filtering options
 - Car rental reservation system
 - User profile management
@@ -85,7 +86,7 @@ Verification on 20 October 2026: the local `DemoRentalFlowTest` and deployed `sc
 ./scripts/verify-live.ps1 -BaseUrl https://khayem-car-rental.vercel.app
 ```
 
-Render configuration is retained as a fallback. Git integration is optional; direct authenticated Vercel CLI publication works.
+Render configuration is retained as a fallback. The Vercel project is connected to this GitHub repository: a push to `master` triggers a production build. Direct authenticated Vercel CLI publication also works.
 
 ## Loc Auto V2
 
@@ -99,4 +100,12 @@ The refreshed interface uses shared Thymeleaf fragments and local CSS/JavaScript
 
 Run the verification suite from `car-rental-client/` with `./mvnw test` (Windows: `./mvnw.cmd test`). It covers public rendering, protected routes, visitor isolation, role/id tampering, session rotation, combined filtering, invalid booking inputs, concurrent booking and the original login/reservation/return flow.
 
-This remains a pedagogical demonstration. Google login is not configured. The existing local authentication still requires production hardening, including password hashing and CSRF protection, before accepting real user credentials. H2 is still in memory: durable storage needs a separate database profile/migration plan. Do not point the resetting demo schema at a persistent database.
+This remains a pedagogical demonstration. H2 is still in memory: accounts and bookings can disappear when an instance restarts, and separate instances do not share their database or sessions. Durable storage needs a separate database profile/migration plan. Do not point the resetting demo schema at a persistent database.
+
+## Authentication and Google login
+
+Local authentication now uses Spring Security, BCrypt with cost 12, CSRF tokens on state-changing forms, session rotation on login and POST-only logout. Profile password changes require the current password and confirmation, then end the current session. The one-click demo visitor remains isolated and needs no personal data.
+
+Google OpenID Connect is implemented but is **inactive on the public demo until its OAuth credentials are configured**. Without both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, the Google button and OAuth routes are absent. Read [the setup and migration guide](docs/GOOGLE-LOGIN.md) before enabling it. A Google identity uses its verified provider/subject identifier; matching an email address never silently links an existing local account.
+
+Verification on 22 October 2026: 17 automated tests passed, including local login, CSRF rejection, password hashing/change, visitor isolation, rental concurrency and mocked Google claims. The real Google consent/callback flow still needs a configured OAuth client and a browser verification. `scripts/verify-live.ps1` exercises the rendered CSRF forms, demo access, booking, history, return and logout; it releases its fictional test vehicle afterward.
