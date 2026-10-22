@@ -1,121 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="html(title, content)">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:replace="${title}">Location de Voitures</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
-    <!-- Header and Navbar -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <i class="fas fa-car"></i> Loc Auto
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head th:fragment="head(title)">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#183e35">
+        <title th:text="${title} + ' · Loc Auto'">Loc Auto</title>
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+        <script defer th:src="@{/js/script.js}">
+        </script>
+    </head>
+    <body>
+        <header class="site-header" th:fragment="header(active)">
+            <a class="skip-link" href="#main">Aller au contenu</a>
+            <div class="nav-wrap">
+                <a class="brand" th:href="@{/}" aria-label="Loc Auto, accueil">
+                    <span class="brand-mark">L↗</span>loc<span class="brand-light">auto</span>
+
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <!-- Navigation for logged in users -->
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" th:if="${session.user != null}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/"><i class="fas fa-home"></i> Accueil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/voitures"><i class="fas fa-car"></i> Voitures</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/locations"><i class="fas fa-key"></i> Mes Locations</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/contact"><i class="fas fa-envelope"></i> Contact</a>
-                        </li>
-                    </ul>
-                    
-                    <!-- User account dropdown for logged in users -->
-                    <ul class="navbar-nav" th:if="${session.user != null}">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i> <span th:text="${session.user.prenom + ' ' + session.user.nom}">User</span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="/profile"><i class="fas fa-id-card"></i> Mon Profil</a></li>
-                                <li><a class="dropdown-item" href="/locations/actives"><i class="fas fa-car-side"></i> Locations en cours</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    
-                    <!-- Login/Register links for non-logged in users -->
-                    <ul class="navbar-nav" th:if="${session.user == null}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Connexion</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/signup"><i class="fas fa-user-plus"></i> Inscription</a>
-                        </li>
-                    </ul>
-                </div>
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu ☰</button>
+                <nav id="site-nav" aria-label="Navigation principale">
+                    <a th:href="@{/voitures}" th:classappend="${active == 'catalog'} ? 'active'">Les voitures</a>
+                    <a th:href="@{/about}" th:classappend="${active == 'about'} ? 'active'">Le projet</a>
+                    <a th:href="@{/faq}" th:classappend="${active == 'faq'} ? 'active'">Questions fréquentes</a>
+                    <a th:if="${session.user != null}" th:href="@{/locations}" th:classappend="${active == 'bookings'} ? 'active'">Mes réservations</a>
+                    <a th:if="${session.user != null}" th:href="@{/profile}" class="nav-account">Mon espace ↗</a>
+                    <a th:if="${session.user == null}" th:href="@{/login}" class="nav-account">Connexion ↗</a>
+                </nav>
             </div>
-        </nav>
-    </header>
-    
-    <!-- Main Content -->
-    <main class="container my-4">
-        <!-- Alert messages -->
-        <div th:if="${success}" class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle"></i> <span th:text="${success}">Success message</span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error message</span>
-        </div>
-        
-        <!-- Content -->
-        <div th:replace="${content}">Page content goes here</div>
-    </main>
-    
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4 mt-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Loc Auto</h5>
-                    <p>Service de location de voitures professionnelles pour tous vos besoins.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Liens rapides</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/" class="text-white">Accueil</a></li>
-                        <li><a href="/voitures" class="text-white">Nos Voitures</a></li>
-                        <li><a href="/about" class="text-white">À Propos</a></li>
-                        <li><a href="/contact" class="text-white">Contact</a></li>
-                        <li><a href="/faq" class="text-white">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <address>
-                        <i class="fas fa-map-marker-alt"></i> 123 Rue Principale, Ville<br>
-                        <i class="fas fa-phone"></i> +33 1 23 45 67 89<br>
-                        <i class="fas fa-envelope"></i> contact@locauto.com
-                    </address>
-                </div>
+            <div class="demo-banner" th:if="${demoMode}">
+                <span class="live-dot">
+                </span>Démonstration interactive · Véhicules et comptes fictifs · Aucun paiement</div>
+        </header>
+        <div th:fragment="alerts" class="alerts">
+            <div th:if="${success}" class="alert success" role="status" th:text="${success}">
             </div>
-            <hr>
-            <div class="text-center">
-                <p>&copy; 2025 Loc Auto. Tous droits réservés.</p>
+            <div th:if="${error}" class="alert error" role="alert" th:text="${error}">
             </div>
         </div>
-    </footer>
-    
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script th:src="@{/js/script.js}"></script>
-</body>
-</html> 
+        <svg th:fragment="car" class="car-art" viewBox="0 0 640 310" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse cx="326" cy="262" rx="235" ry="15" fill="#0d2925" opacity=".14"/>
+            <path d="M103 210 121 152Q124 141 151 138L206 83Q217 72 245 72H358Q376 72 396 89L451 135 515 151Q541 157 551 181L558 213Q558 231 539 231H108Q92 231 103 210Z" fill="currentColor"/>
+            <path d="m166 137 54-49h124q16 0 32 14l43 35H166Z" fill="#23483f"/>
+            <path d="m236 90-40 45h75V90h-35Zm47 0v45h113l-34-32q-12-13-26-13h-53Z" fill="#d7e6df"/>
+            <path d="M108 190h58m338-27 29 15M311 153h24" stroke="#f3f0e8" stroke-width="8" stroke-linecap="round"/>
+            <path d="m173 174 312 4" stroke="#172e2a" stroke-opacity=".16" stroke-width="2"/>
+            <path d="M107 218h442" stroke="#173f35" stroke-width="13"/>
+            <circle cx="198" cy="229" r="44" fill="#20312e"/>
+            <circle cx="198" cy="229" r="25" fill="#b9c7c2"/>
+            <circle cx="198" cy="229" r="13" fill="#edf2ee"/>
+            <circle cx="463" cy="229" r="44" fill="#20312e"/>
+            <circle cx="463" cy="229" r="25" fill="#b9c7c2"/>
+            <circle cx="463" cy="229" r="13" fill="#edf2ee"/>
+            <path d="M130 158h26m371 38h23" stroke="#e6edbd" stroke-width="10" stroke-linecap="round"/>
+        </svg>
+        <article th:fragment="carCard(car)" class="car-card">
+            <a class="car-visual" th:href="@{/voitures/{mat}(mat=${car.mat})}" th:classappend="${car.marque == 'Peugeot' ? 'tone-sand' : (car.marque == 'Citroen' ? 'tone-blue' : 'tone-green')}" th:aria-label="${'Voir ' + car.marque + ' ' + car.model}">
+                <span class="availability" th:classappend="${car.disp != 'DISPONIBLE'} ? 'unavailable'" th:text="${car.disp == 'DISPONIBLE' ? 'Disponible' : 'En location'}">
+                </span>
+                <svg th:replace="~{layout :: car}">
+                </svg>
+                <span class="image-note">Illustration</span>
+            </a>
+            <div class="car-body">
+                <div class="car-heading">
+                    <div>
+                        <p class="eyebrow" th:text="${car.marque}">
+                        </p>
+                        <h3 th:text="${car.model}">
+                        </h3>
+                    </div>
+                    <div class="price">
+                        <strong th:text="${#numbers.formatDecimal(car.prix,1,'WHITESPACE',2,'COMMA')}">
+                        </strong> €<small>/ jour</small>
+                    </div>
+                </div>
+                <div class="car-meta">
+                    <span th:text="${car.nbplace + ' places'}">
+                    </span>
+                    <span th:text="${car.mat}">
+                    </span>
+                </div>
+                <a class="card-link" th:href="@{/voitures/{mat}(mat=${car.mat})}">Découvrir ce véhicule <span>↗</span>
+                </a>
+            </div>
+        </article>
+        <footer th:fragment="footer">
+            <div class="footer-top">
+                <a class="brand" th:href="@{/}">loc<span class="brand-light">auto</span>
+
+                </a>
+                <p>Une voiture. Un trajet.<br>Un parcours simple.</p>
+                <div>
+                    <a th:href="@{/voitures}">Explorer le catalogue ↗</a>
+                    <a th:href="@{/about}">À propos du projet</a>
+                    <a th:href="@{/faq}">Aide & fonctionnement</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>Loc Auto · Projet de Khayem Ben Ghorbel</span>
+                <span th:if="${demoMode}">Démo pédagogique — aucune location réelle</span>
+                <a href="https://github.com/khayem487/car-rental-client" target="_blank" rel="noopener noreferrer">Code source ↗</a>
+            </div>
+        </footer>
+    </body>
+</html>

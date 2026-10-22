@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout :: head('Questions fréquentes')}">
+    </head>
+    <body>
+        <header th:replace="~{layout :: header('faq')}">
+        </header>
+        <main id="main">
+            <section class="shell section narrow-wide">
+                <p class="eyebrow">Quelques réponses, avant le départ</p>
+                <h1 class="page-title">Tout simplement,<br>
+                    <em>comment ça marche ?</em>
+                </h1>
+                <div class="faq-list">
+                    <details open>
+                        <summary>Puis-je parcourir les voitures sans compte ?</summary>
+                        <p>Oui. Le catalogue, les filtres et les fiches sont accessibles librement. Un compte est nécessaire pour réserver et retrouver son historique.</p>
+                    </details>
+                    <details th:if="${demoMode}">
+                        <summary>Comment essayer sans m’inscrire ?</summary>
+                        <p>Choisissez « Essayer la démo » depuis l’accueil ou la connexion. Un compte fictif propre à votre visite est créé. Son historique n’est pas partagé avec les autres comptes.</p>
+                    </details>
+                    <details>
+                        <summary>Comment le prix est-il calculé ?</summary>
+                        <p>Le total correspond au tarif journalier multiplié par le nombre de jours. Il apparaît avant confirmation et dans le détail de la réservation.</p>
+                    </details>
+                    <details>
+                        <summary>Quelles dates et durées puis-je choisir ?</summary>
+                        <p>Le départ peut être prévu à partir d’aujourd’hui, pour 1 à 30 jours. La disponibilité du véhicule est vérifiée lors de la confirmation.</p>
+                    </details>
+                    <details>
+                        <summary>Comment terminer une location ?</summary>
+                        <p>Dans « Mes réservations », ouvrez le détail du trajet puis « Terminer la location ». Le véhicule redevient disponible.</p>
+                    </details>
+                    <details th:if="${demoMode}">
+                        <summary>Faut-il fournir des documents ou payer ?</summary>
+                        <p>Non. Cette démonstration pédagogique ne demande aucune carte bancaire, pièce d’identité ou caution réelle. Utilisez exclusivement des informations fictives.</p>
+                    </details>
+                    <details th:if="${demoMode}">
+                        <summary>Mes données sont-elles conservées définitivement ?</summary>
+                        <p>La base de démonstration peut être réinitialisée. Ne l’utilisez pas pour conserver des informations importantes ou personnelles.</p>
+                    </details>
+                </div>
+                <a class="button" th:href="@{/voitures}">C’est parti, voir les voitures ↗</a>
+            </section>
+        </main>
+        <footer th:replace="~{layout :: footer}">
+        </footer>
+    </body>
+</html>

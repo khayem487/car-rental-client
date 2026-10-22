@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import java.util.UUID;
 import java.util.Optional;
 
 /**
@@ -34,6 +38,7 @@ public class AuthController {
      * d'inscription et de mise à jour du profil.
      */
     private final PersonneService personneService;
+    private final Environment environment;
 
     /**
      * Constructeur avec injection de dépendance
@@ -41,8 +46,9 @@ public class AuthController {
      * @param personneService Service pour la gestion des utilisateurs
      */
     @Autowired
-    public AuthController(PersonneService personneService) {
+    public AuthController(PersonneService personneService, Environment environment) {
         this.personneService = personneService;
+        this.environment = environment;
     }
 
     /**
@@ -77,9 +83,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public String processLogin(@RequestParam String login, @RequestParam String passwd, 
-                               HttpSession session, RedirectAttributes redirectAttributes) {
-        
-        System.out.println("Tentative de connexion avec login: " + login);
+                               HttpSession session, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         
         // Tentative d'authentification via le service
         Optional<Personne> personneOpt = personneService.authentifier(login, passwd);
@@ -87,17 +91,16 @@ public class AuthController {
         if (personneOpt.isPresent()) {
             // Authentification réussie
             Personne personne = personneOpt.get();
-            System.out.println("Authentification réussie pour: " + personne.getPrenom() + " " + personne.getNom() + ", rôle: " + personne.getRole());
             
             // Stockage de l'utilisateur dans la session pour la durée de sa visite
+            request.changeSessionId();
+            session.removeAttribute("demoVisitor");
             session.setAttribute("user", personne);
-            System.out.println("Utilisateur stocké en session: " + personne.getId());
             
             // Redirection vers la page d'accueil
             return "redirect:/";
         } else {
             // Authentification échouée - préparer un message d'erreur
-            System.out.println("Échec d'authentification pour login: " + login);
             redirectAttributes.addFlashAttribute("error", "Login ou mot de passe incorrect");
             return "redirect:/login";
         }
@@ -113,7 +116,7 @@ public class AuthController {
     public String logout(HttpSession session) {
         // Invalider la session pour déconnecter l'utilisateur
         session.invalidate();
-        return "redirect:/login";
+        return "redirect:/";
     }
 
     /**
@@ -145,8 +148,27 @@ public class AuthController {
      * @return Redirection vers la page de connexion ou d'inscription selon le résultat
      */
     @PostMapping("/signup")
-    public String processSignup(@ModelAttribute Personne personne, RedirectAttributes redirectAttributes) {
+    public String processSignup(@ModelAttribute Personne personne,
+                                @RequestParam(defaultValue = "") String confirmPasswd,
+                                RedirectAttributes redirectAttributes) {
         try {
+            validateName(personne.getNom());
+            validateName(personne.getPrenom());
+            if (personne.getLogin() == null || !personne.getLogin().matches("[a-zA-Z0-9._-]{3,40}"))
+                throw new IllegalArgumentException("Choisissez un identifiant de 3 à 40 lettres, chiffres, points ou tirets.");
+            validatePassword(personne.getPasswd());
+            if (!personne.getPasswd().equals(confirmPasswd))
+                throw new IllegalArgumentException("Les mots de passe ne correspondent pas.");
+            if (isDemo()) {
+                String ref = "DEMO-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+                personne.setCin(ref);
+                personne.setNpermis(ref);
+                personne.setNumero("DEMO");
+            } else {
+                validateReference(personne.getCin());
+                validateReference(personne.getNpermis());
+                validateReference(personne.getNumero());
+            }
             // Tentative d'enregistrement du nouvel utilisateur
             personneService.enregistrer(personne);
             
@@ -200,7 +222,23 @@ public class AuthController {
             // Récupérer l'ID de l'utilisateur connecté et l'affecter à l'objet
             // Cela garantit que l'utilisateur ne peut modifier que son propre profil
             Personne currentUser = (Personne) session.getAttribute("user");
+            if (Boolean.TRUE.equals(session.getAttribute("demoVisitor")))
+                throw new IllegalArgumentException("Le profil de visite est fictif et ne peut pas être modifié.");
+            validateName(personne.getNom());
+            validateName(personne.getPrenom());
             personne.setId(currentUser.getId());
+            personne.setLogin(currentUser.getLogin());
+            personne.setCin(currentUser.getCin());
+            if (isDemo()) {
+                personne.setNumero(currentUser.getNumero());
+                personne.setNpermis(currentUser.getNpermis());
+            } else {
+                validateReference(personne.getNumero());
+                validateReference(personne.getNpermis());
+            }
+            if (personne.getPasswd() == null || personne.getPasswd().isEmpty())
+                personne.setPasswd(currentUser.getPasswd());
+            else validatePassword(personne.getPasswd());
             
             // Mettre à jour les informations dans la base de données
             personneService.mettreAJour(personne);
@@ -217,4 +255,17 @@ public class AuthController {
             return "redirect:/profile";
         }
     }
-} 
+    private boolean isDemo() { return environment.acceptsProfiles(Profiles.of("demo")); }
+    private void validateName(String value) {
+        if (value == null || value.trim().isEmpty() || value.length() > 50)
+            throw new IllegalArgumentException("Renseignez un prénom et un nom de 50 caractères maximum.");
+    }
+    private void validatePassword(String value) {
+        if (value == null || value.length() < 8 || value.length() > 100)
+            throw new IllegalArgumentException("Le mot de passe doit contenir entre 8 et 100 caractères.");
+    }
+    private void validateReference(String value) {
+        if (value == null || value.trim().isEmpty() || value.length() > 20)
+            throw new IllegalArgumentException("Complétez les références et coordonnées (20 caractères maximum).");
+    }
+}

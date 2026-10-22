@@ -8,6 +8,8 @@ import com.carrental.client.model.Personne;
 import com.carrental.client.model.Voiture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 
 import java.util.Date;
 import java.util.List;
@@ -100,7 +102,14 @@ public class LocationService {
      * @return ID de la nouvelle location créée
      * @throws IllegalArgumentException si la voiture n'est pas disponible ou si la personne n'existe pas
      */
+    @Transactional
     public Long createLocation(Location location) {
+        if (location.getDteDeb() == null || new java.sql.Date(location.getDteDeb().getTime()).toLocalDate().isBefore(LocalDate.now()))
+            throw new IllegalArgumentException("Choisissez une date de départ à partir d'aujourd'hui.");
+        if (location.getDuree() < 1 || location.getDuree() > 30)
+            throw new IllegalArgumentException("La durée doit être comprise entre 1 et 30 jours.");
+        if (location.getCheque() == null || location.getCheque().trim().isEmpty() || location.getCheque().length() > 50)
+            throw new IllegalArgumentException("Renseignez une référence de 50 caractères maximum.");
         // VALIDATION 1: Vérifier que la voiture est bien disponible
         if (!voitureService.isVoitureDisponible(location.getMat())) {
             throw new IllegalArgumentException("Cette voiture n'est pas disponible");
@@ -136,6 +145,7 @@ public class LocationService {
      * @param id_location ID de la location à terminer
      * @throws IllegalArgumentException si la location n'existe pas
      */
+    @Transactional
     public void terminerLocation(Long id_location) {
         // Vérifier que la location existe avant de tenter de la terminer
         Optional<Location> location = locationDAO.findById(id_location);
@@ -186,4 +196,4 @@ public class LocationService {
     public Optional<Location> findById(Long id_location) {
         return locationDAO.findById(id_location);
     }
-} 
+}

@@ -26,7 +26,7 @@ class DemoRentalFlowTest {
 
     @Test
     void realDemoLoginCatalogReservationAndReturn() throws Exception {
-        mvc.perform(get("/voitures")).andExpect(redirectedUrl("/login"));
+        mvc.perform(get("/voitures")).andExpect(status().isOk());
         mvc.perform(get("/login")).andExpect(status().isOk())
                 .andExpect(content().string(containsString("Loc Auto")));
 

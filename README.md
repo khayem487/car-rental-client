@@ -86,3 +86,17 @@ Verification on 20 October 2026: the local `DemoRentalFlowTest` and deployed `sc
 ```
 
 Render configuration is retained as a fallback. Git integration is optional; direct authenticated Vercel CLI publication works.
+
+## Loc Auto V2
+
+The refreshed interface uses shared Thymeleaf fragments and local CSS/JavaScript, with no external UI CDN. The catalogue and vehicle details are public; reservations, history and profile actions require the current authenticated session.
+
+- Combined brand/model, minimum-seat, maximum-price and availability filters.
+- A complete reservation flow with a live price estimate, server-side date/duration checks, confirmation, history and return.
+- In the `demo` profile, one-click access creates a different fictional CLIENT account for each visitor. Signup generates fictional identity references; the interface asks for no real documents or payment details.
+- An atomic vehicle claim inside the reservation transaction prevents simultaneous reservations. Repeating a previous return cannot release a vehicle booked afterward.
+- Completed project and FAQ pages replace the old placeholder contact links.
+
+Run the verification suite from `car-rental-client/` with `./mvnw test` (Windows: `./mvnw.cmd test`). It covers public rendering, protected routes, visitor isolation, role/id tampering, session rotation, combined filtering, invalid booking inputs, concurrent booking and the original login/reservation/return flow.
+
+This remains a pedagogical demonstration. Google login is not configured. The existing local authentication still requires production hardening, including password hashing and CSRF protection, before accepting real user credentials. H2 is still in memory: durable storage needs a separate database profile/migration plan. Do not point the resetting demo schema at a persistent database.

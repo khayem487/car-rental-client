@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout :: head('Le projet')}">
+    </head>
+    <body>
+        <header th:replace="~{layout :: header('about')}">
+        </header>
+        <main id="main">
+            <section class="shell section">
+                <p class="eyebrow">Derrière Loc Auto</p>
+                <h1 class="page-title">Un vrai parcours.<br>
+                    <em>Un projet à explorer.</em>
+                </h1>
+                <p class="lead max-copy">Loc Auto est un projet de gestion de location de voitures développé par Khayem Ben Ghorbel. Parcourez le catalogue, réservez un véhicule et gérez son retour.</p>
+                <div class="info-grid">
+                    <article class="panel">
+                        <span class="step-num">01 /</span>
+                        <h2>Explorez</h2>
+                        <p>Un catalogue public, des filtres combinables et une fiche pour chaque véhicule.</p>
+                    </article>
+                    <article class="panel">
+                        <span class="step-num">02 /</span>
+                        <h2>Réservez</h2>
+                        <p>Un compte, une date, une durée et un montant calculé depuis le tarif du véhicule.</p>
+                    </article>
+                    <article class="panel">
+                        <span class="step-num">03 /</span>
+                        <h2>Retrouvez</h2>
+                        <p>Un historique associé à votre compte et un parcours de retour.</p>
+                    </article>
+                </div>
+                <div class="panel project-panel" id="projet">
+                    <div>
+                        <p class="eyebrow">Le projet technique</p>
+                        <h2>Java, Spring Boot<br>et une application réelle.</h2>
+                    </div>
+                    <div>
+                        <p>L’interface utilise Thymeleaf. Les comptes et réservations passent par les contrôleurs, services et requêtes JDBC du projet.</p>
+                        <p th:if="${demoMode}">Cette version contient des données fictives et utilise une base de démonstration réinitialisable. Aucune location ou transaction réelle.</p>
+                        <div class="actions">
+                            <a class="button" href="https://github.com/khayem487/car-rental-client" target="_blank" rel="noopener noreferrer">Voir le code source ↗</a>
+                            <a class="button button-outline" href="https://khayem-ben-ghorbel.vercel.app/">Le portfolio ↗</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer th:replace="~{layout :: footer}">
+        </footer>
+    </body>
+</html>

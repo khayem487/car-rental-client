@@ -4,6 +4,7 @@ import com.carrental.client.dao.PersonneDAO;
 import com.carrental.client.model.Personne;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -79,6 +80,7 @@ public class PersonneService {
      * @return ID généré pour le nouvel utilisateur
      * @throws IllegalArgumentException si le login ou le CIN sont déjà utilisés
      */
+    @Transactional
     public Long enregistrer(Personne personne) {
         // VALIDATION 1: Vérifier l'unicité du login
         if (personneDAO.loginExists(personne.getLogin())) {
@@ -135,4 +137,4 @@ public class PersonneService {
     public Optional<Personne> findById(Long id) {
         return personneDAO.findById(id);
     }
-} 
+}

@@ -137,6 +137,9 @@ public class LocationDAO {
      * @return ID généré pour la nouvelle location
      */
     public Long save(Location location) {
+        // Claim the vehicle atomically; the service transaction rolls it back if insertion fails.
+        if (jdbcTemplate.update("UPDATE voiture SET disp = 'LOUEE' WHERE mat = ? AND disp = 'DISPONIBLE'", location.getMat()) != 1)
+            throw new IllegalArgumentException("Cette voiture vient d'être réservée. Choisissez un autre véhicule.");
         // Requête SQL d'insertion avec séquence Oracle pour l'ID
         String sql = "INSERT INTO location (id_location, id_personne, mat, dteDeb, duree, cheque, etat) " +
                      "VALUES (seq_location.NEXTVAL, ?, ?, ?, ?, ?, ?)";
@@ -150,10 +153,7 @@ public class LocationDAO {
                 location.getCheque(),
                 location.getEtat());
         
-        // Effet secondaire: mise à jour de l'état de la voiture à LOUEE
-        voitureDAO.updateDisp(location.getMat(), "LOUEE");
-        
-        // Récupération de l'ID généré par la séquence Oracle
+                // Original Oracle/H2 dialect; a PostgreSQL profile needs its own sequence strategy.
         String idSql = "SELECT seq_location.CURRVAL FROM dual";
         return jdbcTemplate.queryForObject(idSql, Long.class);
     }
@@ -170,8 +170,9 @@ public class LocationDAO {
         String mat = jdbcTemplate.queryForObject(sql, String.class, id_location);
         
         // 2. Mise à jour de l'état de la location à TERMINEE
-        String updateSql = "UPDATE location SET etat = 'TERMINEE' WHERE id_location = ?";
-        jdbcTemplate.update(updateSql, id_location);
+        String updateSql = "UPDATE location SET etat = 'TERMINEE' WHERE id_location = ? AND etat = 'EN_COURS'";
+        if (jdbcTemplate.update(updateSql, id_location) != 1)
+            throw new IllegalArgumentException("Cette location est déjà terminée.");
         
         // 3. Mise à jour de l'état de la voiture à DISPONIBLE
         voitureDAO.updateDisp(mat, "DISPONIBLE");
@@ -189,4 +190,4 @@ public class LocationDAO {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, mat);
         return count != null && count > 0;
     }
-} 
+}
