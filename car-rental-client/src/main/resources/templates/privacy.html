@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout :: head('Confidentialité')}"></head>
+    <body>
+        <header th:replace="~{layout :: header('privacy')}"></header>
+        <main id="main">
+            <section class="shell section narrow-wide">
+                <a class="back-link" th:href="@{/}">← Retour à l’accueil</a>
+                <p class="eyebrow">Vos données dans Loc Auto</p>
+                <h1 class="page-title">La confidentialité,<br><em>en clair.</em></h1>
+                <p class="lead max-copy">Loc Auto est une démonstration de réservation de voitures. Cette page explique les données utilisées pour vous connecter et retrouver vos essais.</p>
+                <p class="micro">Mise à jour : 25 octobre 2026</p>
+                <div class="policy-copy">
+                    <article class="panel">
+                        <h2>Le projet et votre contact</h2>
+                        <p>Loc Auto est développé et administré par <strong>Khayem Ben Ghorbel</strong>. Pour toute question sur vos données ou demande de suppression : <a href="mailto:khayembg07@gmail.com">khayembg07@gmail.com</a>.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Compte et réservations fictives</h2>
+                        <p>Un compte local conserve l’identifiant, le nom et le prénom saisis, ainsi qu’un hachage BCrypt du mot de passe. Le mot de passe local n’est pas conservé en clair. L’accès « Essayer la démo » crée un compte de visite distinct avec des informations fictives.</p>
+                        <p>La démonstration génère des références d’identité fictives et ne demande ni document d’identité, ni permis réel, ni coordonnées bancaires. Les réservations enregistrent le compte associé, le véhicule, les dates, la durée, une référence de démonstration et leur état, afin d’afficher votre historique et de gérer le retour du véhicule.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Si vous choisissez Google</h2>
+                        <p>La connexion Google demande uniquement les autorisations <strong>openid, profile et email</strong>. Google transmet un identifiant de compte, l’adresse e-mail et son statut de vérification, ainsi que les informations de profil autorisées, notamment le nom, le prénom et, si fournie, l’image du profil.</p>
+                        <p>Loc Auto utilise ces informations pour créer ou retrouver votre compte. La base conserve l’identifiant Google et l’adresse e-mail associés au compte, ainsi que le nom et le prénom utilisés pour le profil. Les attributs d’identité et les éléments techniques de connexion, dont les jetons nécessaires à l’authentification, sont également traités côté serveur ; les attributs d’identité sont conservés dans la session.</p>
+                        <p>Loc Auto ne reçoit pas votre mot de passe Google et ne demande aucun accès à vos messages Gmail ou fichiers Drive. Les données Google servent à la connexion et au fonctionnement de votre espace ; elles ne sont ni vendues ni utilisées par l’application pour la publicité ou l’entraînement de modèles.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Session et cookie</h2>
+                        <p>Le cookie technique <strong>JSESSIONID</strong> permet de garder votre session et de protéger les formulaires. Les données de session sont stockées côté serveur, y compris les éléments de vérification nécessaires pendant une connexion Google. L’application n’ajoute pas de traceur publicitaire ou d’outil de mesure d’audience.</p>
+                        <p>Une session devient inutilisable après <strong>30 minutes d’inactivité</strong> ou après déconnexion. Des enregistrements de sessions expirées peuvent subsister jusqu’à leur nettoyage technique.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Hébergement et conservation</h2>
+                        <p>La version publique est hébergée par <strong>Vercel</strong>. Les comptes, réservations et sessions sont stockés dans une base PostgreSQL <strong>Neon située à Francfort, en Allemagne</strong>. Ces prestataires traitent les données nécessaires à l’hébergement et au fonctionnement du service. L’acheminement et la sécurité des requêtes peuvent aussi impliquer des informations techniques, comme l’adresse IP.</p>
+                        <p>Les comptes et réservations sont conservés entre les redémarrages. Aucun délai de suppression automatique n’est actuellement programmé : ils restent en base jusqu’à un nettoyage par l’administrateur ou au traitement d’une demande de suppression. Une déconnexion n’efface pas le compte ni son historique.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Questions ou suppression</h2>
+                        <p>Écrivez à <a href="mailto:khayembg07@gmail.com">khayembg07@gmail.com</a> pour demander l’accès, la correction ou la suppression de vos données. Indiquez l’identifiant Loc Auto concerné ou l’adresse du compte Google utilisé, sans envoyer de mot de passe ni de document sensible ; la demande devra pouvoir être rattachée au bon compte.</p>
+                        <p>Vous pouvez aussi retirer l’autorisation de Loc Auto dans les paramètres de votre compte Google. Cela ne supprime pas automatiquement les données déjà enregistrées dans Loc Auto : contactez l’administrateur pour leur suppression.</p>
+                    </article>
+                </div>
+                <a class="text-link" th:href="@{/terms}">Lire les conditions de la démonstration ↗</a>
+            </section>
+        </main>
+        <footer th:replace="~{layout :: footer}"></footer>
+    </body>
+</html>

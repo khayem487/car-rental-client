@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout :: head('Conditions de la démonstration')}"></head>
+    <body>
+        <header th:replace="~{layout :: header('terms')}"></header>
+        <main id="main">
+            <section class="shell section narrow-wide">
+                <a class="back-link" th:href="@{/}">← Retour à l’accueil</a>
+                <p class="eyebrow">Le cadre de votre essai</p>
+                <h1 class="page-title">Explorez le parcours.<br><em>Aucune location réelle.</em></h1>
+                <p class="lead max-copy">Ces conditions décrivent le fonctionnement de la démonstration Loc Auto, développée par Khayem Ben Ghorbel.</p>
+                <p class="micro">Mise à jour : 25 octobre 2026</p>
+                <div class="policy-copy">
+                    <article class="panel">
+                        <h2>Une démonstration pédagogique</h2>
+                        <p>Le catalogue, les tarifs et les réservations servent à tester une application. Une réservation ne donne lieu à aucune location réelle, remise de véhicule, facturation, caution ou paiement. Les montants affichés sont des calculs de démonstration.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Des informations adaptées à un essai</h2>
+                        <p>Utilisez des noms et informations fictifs dans les formulaires et un mot de passe réservé à cet essai. Ne saisissez aucun numéro de document réel, information bancaire ou autre donnée sensible. L’accès visiteur permet de tester sans fournir d’informations personnelles.</p>
+                        <p>La connexion Google est facultative et utilise l’identité du compte Google choisi ; ces données sont décrites dans la <a th:href="@{/privacy}">page de confidentialité</a>. Elle ne vérifie ni un permis de conduire ni une aptitude à louer un véhicule.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Votre espace de test</h2>
+                        <p>Les réservations et l’historique sont associés à votre compte. Terminez une réservation depuis sa fiche pour rendre le véhicule à nouveau disponible, puis déconnectez-vous lorsque vous avez fini, notamment sur un appareil partagé.</p>
+                        <p>Utilisez uniquement votre propre espace. Ne cherchez pas à accéder aux comptes d’autres visiteurs ou à perturber le service. Les données d’essai peuvent être nettoyées par l’administrateur et la démonstration peut évoluer ou être temporairement indisponible.</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Une question sur le projet ?</h2>
+                        <p>Contactez <strong>Khayem Ben Ghorbel</strong> à <a href="mailto:khayembg07@gmail.com">khayembg07@gmail.com</a> pour une question, un problème de fonctionnement ou une demande concernant vos données.</p>
+                    </article>
+                </div>
+                <a class="button" th:href="@{/voitures}">Explorer le catalogue ↗</a>
+            </section>
+        </main>
+        <footer th:replace="~{layout :: footer}"></footer>
+    </body>
+</html>

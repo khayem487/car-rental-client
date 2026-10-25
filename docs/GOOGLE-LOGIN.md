@@ -12,6 +12,17 @@ Use the production site origin:
 https://khayem-car-rental.vercel.app
 ```
 
+Public application branding links (deploy the corresponding pages before publishing the branding):
+
+| Field | URL |
+| --- | --- |
+| Application home page | https://khayem-car-rental.vercel.app/ |
+| Privacy policy | https://khayem-car-rental.vercel.app/privacy |
+| Terms of service | https://khayem-car-rental.vercel.app/terms |
+| Public support contact | khayembg07@gmail.com |
+
+The homepage footer links to both pages without requiring a login. The privacy page describes the actual basic-identity scopes, PostgreSQL/session retention, Vercel hosting and Neon Frankfurt database; keep it aligned with future data-handling changes. These pages do not by themselves establish Google brand approval.
+
 Register this exact authorized redirect URI:
 
 ```text

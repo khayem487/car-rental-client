@@ -30,7 +30,7 @@ class LocAutoV2Test {
     @Test
     void publicDiscoveryPagesRenderAndPrivateRoutesRequireAnAccount() throws Exception {
         for (String path : new String[]{"/", "/voitures", "/voitures/disponibles", "/voitures/louees",
-                "/voitures/populaires", "/voitures/AA-123-BB", "/login", "/signup", "/about", "/faq"}) {
+                "/voitures/populaires", "/voitures/AA-123-BB", "/login", "/signup", "/about", "/faq", "/privacy", "/terms"}) {
             mvc.perform(get(path)).andExpect(status().isOk())
                     .andExpect(content().string(containsString("name=\"viewport\"")));
         }

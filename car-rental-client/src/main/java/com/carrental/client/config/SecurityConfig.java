@@ -47,7 +47,8 @@ public class SecurityConfig {
         AuthenticationProvider localAuthentication, AuthenticationSuccessHandler browserSuccess,
         CsrfTokenRepository csrf, ObjectProvider<ClientRegistrationRepository> google, OidcAccounts accounts) throws Exception {
         http.authenticationProvider(localAuthentication)
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/profile/**", "/locations/**").hasRole("CLIENT").anyRequest().permitAll())
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/privacy", "/terms").permitAll()
+                .requestMatchers("/profile/**", "/locations/**").hasRole("CLIENT").anyRequest().permitAll())
             .csrf(config -> config.csrfTokenRepository(csrf))
             .sessionManagement(session -> session.sessionFixation(fixation -> fixation.changeSessionId()))
             .formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").usernameParameter("login").passwordParameter("passwd")
