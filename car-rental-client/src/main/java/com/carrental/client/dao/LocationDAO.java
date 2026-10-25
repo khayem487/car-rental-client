@@ -140,22 +140,9 @@ public class LocationDAO {
         // Claim the vehicle atomically; the service transaction rolls it back if insertion fails.
         if (jdbcTemplate.update("UPDATE voiture SET disp = 'LOUEE' WHERE mat = ? AND disp = 'DISPONIBLE'", location.getMat()) != 1)
             throw new IllegalArgumentException("Cette voiture vient d'être réservée. Choisissez un autre véhicule.");
-        // Requête SQL d'insertion avec séquence Oracle pour l'ID
-        String sql = "INSERT INTO location (id_location, id_personne, mat, dteDeb, duree, cheque, etat) " +
-                     "VALUES (seq_location.NEXTVAL, ?, ?, ?, ?, ?, ?)";
-        
-        // Exécution de la requête d'insertion avec conversion de la date Java en date SQL
-        jdbcTemplate.update(sql, 
-                location.getId_personne(),
-                location.getMat(),
-                new java.sql.Date(location.getDteDeb().getTime()),  // Conversion java.util.Date → java.sql.Date
-                location.getDuree(),
-                location.getCheque(),
-                location.getEtat());
-        
-                // Original Oracle/H2 dialect; a PostgreSQL profile needs its own sequence strategy.
-        String idSql = "SELECT seq_location.CURRVAL FROM dual";
-        return jdbcTemplate.queryForObject(idSql, Long.class);
+        return GeneratedIds.insert(jdbcTemplate, "location", "id_location", "seq_location",
+            "id_personne, mat, dteDeb, duree, cheque, etat", location.getId_personne(), location.getMat(),
+            new java.sql.Date(location.getDteDeb().getTime()), location.getDuree(), location.getCheque(), location.getEtat());
     }
 
     /**

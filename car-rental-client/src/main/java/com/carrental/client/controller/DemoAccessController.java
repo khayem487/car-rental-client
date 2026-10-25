@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /** Creates one ordinary fictional CLIENT account per visitor, only in demo mode. */
 @Controller
-@Profile("demo")
+@Profile({"demo", "persistent"})
 public class DemoAccessController {
     private final PersonneService personnes;
     private final SessionUsers sessions;

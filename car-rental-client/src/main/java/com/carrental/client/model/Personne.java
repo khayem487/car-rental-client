@@ -1,6 +1,7 @@
 package com.carrental.client.model;
 
-public class Personne {
+public class Personne implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String cin;
     private String nom;

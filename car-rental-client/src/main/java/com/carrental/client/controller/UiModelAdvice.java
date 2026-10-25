@@ -23,8 +23,11 @@ public class UiModelAdvice {
 
     @ModelAttribute("demoMode")
     public boolean demoMode() {
-        return environment.acceptsProfiles(Profiles.of("demo"));
+        return environment.acceptsProfiles(Profiles.of("demo", "persistent"));
     }
+
+    @ModelAttribute("durableStorage")
+    public boolean durableStorage() { return environment.acceptsProfiles(Profiles.of("persistent")); }
 
     @ModelAttribute("today")
     public String today() { return LocalDate.now().toString(); }

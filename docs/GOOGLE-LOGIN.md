@@ -4,7 +4,7 @@ The application implements Google OpenID Connect through Spring Security. It req
 
 ## Configure a Google OAuth client
 
-In your own Google Cloud project, configure the consent screen and create an OAuth client of type **Web application**. While the consent screen is in testing, allow the Google accounts that will test it.
+In your own Google Cloud project, configure the consent screen and create an OAuth client of type **Web application**. Keep access limited to basic identity (`openid`, `profile`, `email`); no Gmail or Drive access is needed. Google's [Audience documentation](https://support.google.com/cloud/answer/15549945?hl=en) exempts basic-identity-only requests from the usual test-user allowlist and seven-day authorization rules. Managed Google accounts can still impose their own restrictions.
 
 Use the production site origin:
 
@@ -42,7 +42,9 @@ Enter the secret in the hosting provider's environment settings. Do not commit i
 - The stable account key is `(provider, subject)`. Email matching never automatically links an existing local account.
 - The first login creates a CLIENT with fictional identity references, not a verified driving licence. Google login does not verify eligibility to rent a vehicle.
 - A Google account cannot set a local password through the profile page. Manage the Google password with Google.
-- H2 demo data and HTTP sessions remain temporary and local to each running instance. Enabling OAuth does not make them persistent.
+- Under the default H2 `demo` profile, data and HTTP sessions remain temporary and local to each running instance. For a hosted Google login, configure the [PostgreSQL `persistent` profile](POSTGRESQL.md) first: its shared JDBC sessions preserve pending OAuth state and authenticated users across instances and restarts. Enabling OAuth alone does not make H2 persistent.
+
+For public production branding, provide accurate homepage/privacy links and follow Google's [branding requirements](https://support.google.com/cloud/answer/15549049?hl=en). Brand/domain verification and a successful real login are separate checks; neither is established by the mocked tests below.
 
 ## Existing Oracle installations
 

@@ -38,7 +38,8 @@
                     </details>
                     <details th:if="${demoMode}">
                         <summary>Mes données sont-elles conservées définitivement ?</summary>
-                        <p>La base de démonstration peut être réinitialisée. Ne l’utilisez pas pour conserver des informations importantes ou personnelles.</p>
+                        <p th:unless="${durableStorage}">La base de démonstration peut être réinitialisée. Ne l’utilisez pas pour conserver des informations importantes ou personnelles.</p>
+                        <p th:if="${durableStorage}">Les comptes et réservations fictifs sont conservés entre les redémarrages. Cette démonstration reste destinée aux essais : n’y stockez pas d’informations sensibles ou importantes.</p>
                     </details>
                 </div>
                 <a class="button" th:href="@{/voitures}">C’est parti, voir les voitures ↗</a>

@@ -95,7 +95,7 @@ public class AuthController {
             flash.addFlashAttribute("error", error.getMessage()); return "redirect:/profile";
         }
     }
-    private boolean isDemo() { return environment.acceptsProfiles(Profiles.of("demo")); }
+    private boolean isDemo() { return environment.acceptsProfiles(Profiles.of("demo", "persistent")); }
     private static void validateName(String value) {
         if (value == null || value.isBlank() || value.length() > 50) throw new IllegalArgumentException("Renseignez un prénom et un nom de 50 caractères maximum.");
     }

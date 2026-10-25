@@ -66,7 +66,8 @@
                         <p class="muted">Consultez vos réservations, leur montant et leur statut. Terminez une location depuis sa fiche.</p>
                         <a class="button full" th:href="@{/locations}">Mes réservations ↗</a>
                         <a class="button button-outline full" th:href="@{/voitures}">Le catalogue ↗</a>
-                        <p class="micro" th:if="${demoMode}">Les données peuvent être réinitialisées. Utilisez des informations fictives.</p>
+                        <p class="micro" th:if="${demoMode && !durableStorage}">Les données peuvent être réinitialisées. Utilisez des informations fictives.</p>
+                        <p class="micro" th:if="${durableStorage}">Vos essais sont conservés entre les redémarrages. Utilisez des informations fictives.</p>
                     </aside>
                 </div>
             </section>

@@ -107,25 +107,10 @@ public class PersonneDAO {
      * @return Identifiant généré pour le nouvel utilisateur
      */
     public Long save(Personne personne) {
-        // Requête SQL d'insertion avec séquence Oracle pour l'ID
-        String sql = "INSERT INTO personne (id, cin, nom, prenom, numero, npermis, nbloc, login, passwd, role) " +
-                     "VALUES (seq_personne.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        // Exécution de la requête d'insertion avec tous les paramètres dans l'ordre des ?
-        jdbcTemplate.update(sql, 
-                 personne.getCin(),
-                 personne.getNom(), 
-                 personne.getPrenom(), 
-                 personne.getNumero(),
-                 personne.getNpermis(), 
-                 personne.getNbloc(), 
-                 personne.getLogin(), 
-                 personne.getPasswd(), 
-                 personne.getRole());
-        
-        // Récupération de l'ID généré par la séquence Oracle
-        String idSql = "SELECT seq_personne.CURRVAL FROM dual";
-        return jdbcTemplate.queryForObject(idSql, Long.class);
+        return GeneratedIds.insert(jdbcTemplate, "personne", "id", "seq_personne",
+            "cin, nom, prenom, numero, npermis, nbloc, login, passwd, role",
+            personne.getCin(), personne.getNom(), personne.getPrenom(), personne.getNumero(),
+            personne.getNpermis(), personne.getNbloc(), personne.getLogin(), personne.getPasswd(), personne.getRole());
     }
 
     /**

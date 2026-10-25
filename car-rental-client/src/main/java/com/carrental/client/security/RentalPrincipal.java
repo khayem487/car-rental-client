@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public final class RentalPrincipal implements UserDetails, CredentialsContainer {
+    private static final long serialVersionUID = 1L;
     private final Long id;
     private final String login;
     private String password;

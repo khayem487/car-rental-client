@@ -9,6 +9,7 @@ A web-based car rental system for clients to browse available cars, make reserva
 - Databases:
   - Oracle DB (original stack)
   - H2 in-memory (demo profile for free cloud hosting)
+  - PostgreSQL (explicit `persistent` profile with Flyway migrations and shared JDBC sessions)
 - Build Tool: Maven
 
 ## Features
@@ -100,7 +101,7 @@ The refreshed interface uses shared Thymeleaf fragments and local CSS/JavaScript
 
 Run the verification suite from `car-rental-client/` with `./mvnw test` (Windows: `./mvnw.cmd test`). It covers public rendering, protected routes, visitor isolation, role/id tampering, session rotation, combined filtering, invalid booking inputs, concurrent booking and the original login/reservation/return flow.
 
-This remains a pedagogical demonstration. H2 is still in memory: accounts and bookings can disappear when an instance restarts, and separate instances do not share their database or sessions. Durable storage needs a separate database profile/migration plan. Do not point the resetting demo schema at a persistent database.
+This remains a pedagogical demonstration. The default H2 `demo` profile is in memory: accounts and bookings can disappear when an instance restarts, and separate instances do not share its database or sessions. The separate `persistent` profile now supports PostgreSQL and shared JDBC sessions; follow [the PostgreSQL setup and verification guide](docs/POSTGRESQL.md) before enabling it. Do not point the resetting demo schema at a persistent database.
 
 ## Authentication and Google login
 

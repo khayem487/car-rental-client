@@ -9,7 +9,8 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-public final class RentalOidcUser implements OidcUser {
+public final class RentalOidcUser implements OidcUser, java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private final OidcUser delegate;
     private final Long personneId;
     public RentalOidcUser(OidcUser delegate, Long personneId) { this.delegate = delegate; this.personneId = personneId; }
