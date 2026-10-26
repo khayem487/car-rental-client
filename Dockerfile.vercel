@@ -12,4 +12,4 @@ ENV SERVER_FORWARD_HEADERS_STRATEGY=framework
 ENV SESSION_COOKIE_SECURE=true
 ENV PORT=8080
 EXPOSE 8080
-CMD ["sh", "-c", "exec java -XX:MaxRAMPercentage=70 -Dserver.port=${PORT:-8080} -jar /app/app.jar"]
+CMD ["sh", "-c", "exec java -XX:MaxRAMPercentage=70 -XX:TieredStopAtLevel=1 -Dserver.port=${PORT:-8080} -jar /app/app.jar"]

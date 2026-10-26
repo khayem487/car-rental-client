@@ -44,6 +44,8 @@ Booking list/detail reads fetch their vehicle and customer in one joined query. 
 
 Region placement and fewer queries reduce request overhead, but do not keep the Java process running. Vercel containers can [scale down after five minutes without production traffic](https://vercel.com/docs/functions/runtimes/container#scale-in-behavior), and Neon Free also suspends idle compute. A first visit can still need startup time. No keep-alive job is configured.
 
+The Vercel image uses `-XX:TieredStopAtLevel=1` to favour quick Java 17 startup for this low-traffic interactive demo. This uses C1 compilation rather than spending startup CPU on C2 profiling/optimisation. It can trade long-running compute throughput for startup time; reconsider it for sustained or computation-heavy workloads. See the [JVM tiered-compilation explanation](https://docs.aws.amazon.com/lambda/latest/dg/java-customization.html). The generic local/Render Dockerfile keeps its existing launch options.
+
 ## Verification
 
 Normal offline suite: `./mvnw test` from `car-rental-client/` (Windows `./mvnw.cmd test`). The PostgreSQL integration test is explicitly opt-in and never substitutes H2:
