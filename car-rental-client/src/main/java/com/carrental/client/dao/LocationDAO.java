@@ -1,6 +1,8 @@
 package com.carrental.client.dao;
 
 import com.carrental.client.model.Location;
+import com.carrental.client.model.Personne;
+import com.carrental.client.model.Voiture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,21 +28,26 @@ public class LocationDAO {
     /** DAO pour accéder aux données des voitures (dépendance) */
     private final VoitureDAO voitureDAO;
     
-    /** DAO pour accéder aux données des personnes (dépendance) */
-    private final PersonneDAO personneDAO;
+    // Load display associations in the same query instead of two extra trips per booking.
+    private static final String WITH_DETAILS = "SELECT l.*, "
+        + "v.mat AS v_mat, v.marque AS v_marque, v.model AS v_model, v.nbplace AS v_nbplace, "
+        + "v.disp AS v_disp, v.nbloc AS v_nbloc, v.prix AS v_prix, v.image_path AS v_image_path, "
+        + "p.id AS p_id, p.cin AS p_cin, p.nom AS p_nom, p.prenom AS p_prenom, "
+        + "p.numero AS p_numero, p.npermis AS p_npermis, p.nbloc AS p_nbloc, "
+        + "p.login AS p_login, p.passwd AS p_passwd, p.role AS p_role "
+        + "FROM location l LEFT JOIN voiture v ON v.mat = l.mat "
+        + "LEFT JOIN personne p ON p.id = l.id_personne ";
 
     /**
      * Constructeur avec injection des dépendances.
      * 
      * @param jdbcTemplate JdbcTemplate pour l'accès à la base de données
      * @param voitureDAO DAO pour accéder aux voitures
-     * @param personneDAO DAO pour accéder aux personnes
      */
     @Autowired
-    public LocationDAO(JdbcTemplate jdbcTemplate, VoitureDAO voitureDAO, PersonneDAO personneDAO) {
+    public LocationDAO(JdbcTemplate jdbcTemplate, VoitureDAO voitureDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.voitureDAO = voitureDAO;
-        this.personneDAO = personneDAO;
     }
 
     /**
@@ -58,6 +65,17 @@ public class LocationDAO {
             location.setDuree(rs.getInt("duree"));                  // Durée en jours
             location.setCheque(rs.getString("cheque"));             // Référence du paiement
             location.setEtat(rs.getString("etat"));                 // État (EN_COURS, TERMINEE)
+            if (rs.getString("v_mat") != null) {
+                location.setVoiture(new Voiture(rs.getString("v_mat"), rs.getString("v_marque"),
+                    rs.getString("v_model"), rs.getInt("v_nbplace"), rs.getString("v_disp"),
+                    rs.getInt("v_nbloc"), rs.getDouble("v_prix"), rs.getString("v_image_path")));
+            }
+            if (rs.getObject("p_id") != null) {
+                location.setPersonne(new Personne(rs.getLong("p_id"), rs.getString("p_cin"),
+                    rs.getString("p_nom"), rs.getString("p_prenom"), rs.getString("p_numero"),
+                    rs.getString("p_npermis"), rs.getInt("p_nbloc"), rs.getString("p_login"),
+                    rs.getString("p_passwd"), rs.getString("p_role")));
+            }
             return location;
         }
     }
@@ -70,19 +88,7 @@ public class LocationDAO {
      * @return Liste de toutes les locations de l'utilisateur
      */
     public List<Location> findByPersonneId(Long id_personne) {
-        // Requête SQL filtrée par l'ID de la personne
-        String sql = "SELECT * FROM location WHERE id_personne = ?";
-        List<Location> locations = jdbcTemplate.query(sql, new LocationRowMapper(), id_personne);
-        
-        // Enrichissement des objets Location avec les données associées (voiture et personne)
-        for (Location location : locations) {
-            // Chargement de la voiture associée si elle existe
-            voitureDAO.findByMat(location.getMat()).ifPresent(location::setVoiture);
-            // Chargement de la personne associée si elle existe
-            personneDAO.findById(location.getId_personne()).ifPresent(location::setPersonne);
-        }
-        
-        return locations;
+        return jdbcTemplate.query(WITH_DETAILS + "WHERE l.id_personne = ?", new LocationRowMapper(), id_personne);
     }
 
     /**
@@ -92,17 +98,8 @@ public class LocationDAO {
      * @return Liste des locations en cours de l'utilisateur
      */
     public List<Location> findActiveByPersonneId(Long id_personne) {
-        // Requête SQL filtrée par ID personne ET état de la location
-        String sql = "SELECT * FROM location WHERE id_personne = ? AND etat = 'EN_COURS'";
-        List<Location> locations = jdbcTemplate.query(sql, new LocationRowMapper(), id_personne);
-        
-        // Enrichissement des objets avec les détails de voiture et personne
-        for (Location location : locations) {
-            voitureDAO.findByMat(location.getMat()).ifPresent(location::setVoiture);
-            personneDAO.findById(location.getId_personne()).ifPresent(location::setPersonne);
-        }
-        
-        return locations;
+        return jdbcTemplate.query(WITH_DETAILS + "WHERE l.id_personne = ? AND l.etat = 'EN_COURS'",
+            new LocationRowMapper(), id_personne);
     }
 
     /**
@@ -113,20 +110,8 @@ public class LocationDAO {
      * @return Optional contenant la location si trouvée, vide sinon
      */
     public Optional<Location> findById(Long id_location) {
-        // Requête SQL paramétrée par l'ID de la location
-        String sql = "SELECT * FROM location WHERE id_location = ?";
-        List<Location> locations = jdbcTemplate.query(sql, new LocationRowMapper(), id_location);
-        
-        if (locations.isEmpty()) {
-            return Optional.empty();
-        }
-        
-        // Enrichissement de l'objet Location avec les détails associés
-        Location location = locations.get(0);
-        voitureDAO.findByMat(location.getMat()).ifPresent(location::setVoiture);
-        personneDAO.findById(location.getId_personne()).ifPresent(location::setPersonne);
-        
-        return Optional.of(location);
+        return jdbcTemplate.query(WITH_DETAILS + "WHERE l.id_location = ?", new LocationRowMapper(), id_location)
+            .stream().findFirst();
     }
 
     /**

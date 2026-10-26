@@ -36,6 +36,14 @@ Shared sessions retain local/Google authenticated principals, CSRF tokens, flash
 
 The recurring Spring Session cleanup job is disabled with `cleanupCron="-"`; this is explicitly supported in [Spring Session 4.1.1 source](https://github.com/spring-projects/spring-session/blob/4.1.1/spring-session-jdbc/src/main/java/org/springframework/session/jdbc/JdbcIndexedSessionRepository.java). Expired sessions are rejected/deleted when read, and one bulk cleanup runs at application start. No scheduled traffic prevents Neon from sleeping. Unvisited expired rows can remain until the next cold start; if a long-lived deployment needs additional cleanup, run an occasional maintenance deletion of expired `SPRING_SESSION` rows (attributes cascade), rather than a keep-alive loop.
 
+## Request latency
+
+`vercel.json` selects `fra1` (Frankfurt), alongside the production Neon database. The previous production deployment used `iad1` (Washington), making each database round trip cross the Atlantic. Keep application and database regions together when moving either resource; see [Vercel region configuration](https://vercel.com/docs/functions/configuring-functions/region).
+
+Booking list/detail reads fetch their vehicle and customer in one joined query. Authenticated document requests still check that the account exists and retains its CLIENT role; an unchanged display profile is not rewritten to the session. Only GET/HEAD requests under `/css/` and `/js/` skip that extra account refresh.
+
+Region placement and fewer queries reduce request overhead, but do not keep the Java process running. Vercel containers can [scale down after five minutes without production traffic](https://vercel.com/docs/functions/runtimes/container#scale-in-behavior), and Neon Free also suspends idle compute. A first visit can still need startup time. No keep-alive job is configured.
+
 ## Verification
 
 Normal offline suite: `./mvnw test` from `car-rental-client/` (Windows `./mvnw.cmd test`). The PostgreSQL integration test is explicitly opt-in and never substitutes H2:
