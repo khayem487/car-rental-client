@@ -49,5 +49,5 @@ if ($privateAfterLogout.BaseResponse.RequestMessage.RequestUri.AbsolutePath -ne 
     History = 'passed'
     Return = 'passed'
     Logout = 'POST with CSRF passed; private access rejected afterward'
-    Data = 'Fictional H2 data only; vehicle released.'
+    Data = 'Fictional demonstration data only; vehicle released.'
 }
